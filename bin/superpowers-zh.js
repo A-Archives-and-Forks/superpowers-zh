@@ -474,6 +474,43 @@ ${skillList}
   }
 }
 
+// CLI 工具的可执行文件名 —— 用于检测落空时扫 PATH 给出针对性建议（issue #48）。
+// 只列 CLI：IDE（Cursor/Trae/Qoder 等）装在应用目录里，PATH 上探不到。
+const CLI_PROBES = {
+  'Claude Code':  ['claude', 'copilot'],
+  'Codex CLI':    ['codex'],
+  'Gemini CLI':   ['gemini'],
+  'OpenCode':     ['opencode'],
+  'Aider':        ['aider'],
+  'Qwen Code':    ['qwen'],
+  'OpenClaw':     ['openclaw'],
+  'Claw Code':    ['claw'],
+  'Hermes Agent': ['hermes'],
+};
+
+// 在 PATH 里找可执行文件。只查文件是否存在，不 spawn 进程 ——
+// 绝不在用户机器上执行探测命令（既慢又有副作用风险）。
+function isOnPath(bin) {
+  const sep = process.platform === 'win32' ? ';' : ':';
+  const dirs = (process.env.PATH || '').split(sep).filter(Boolean);
+  const exts = process.platform === 'win32'
+    ? ['', ...(process.env.PATHEXT || '.COM;.EXE;.BAT;.CMD').split(';').filter(Boolean)]
+    : [''];
+  for (const dir of dirs) {
+    for (const ext of exts) {
+      try { if (existsSync(join(dir, bin + ext))) return true; } catch {}
+    }
+  }
+  return false;
+}
+
+// 反查 TARGETS.name -> 最短别名，用于给用户拼出可直接复制的 --tool 命令
+function shortestAlias(toolName) {
+  return Object.keys(TOOL_ALIASES)
+    .filter(a => TOOL_ALIASES[a] === toolName)
+    .sort((a, b) => a.length - b.length)[0];
+}
+
 // 工具名称别名映射（用户输入 -> TARGETS.name）
 const TOOL_ALIASES = {
   'claude':       'Claude Code',
@@ -883,16 +920,39 @@ function install(forceToolName, force, isGlobal) {
     const where = isGlobal ? '你的用户主目录(~)' : '当前目录';
     const flag = isGlobal ? '--global ' : '';
     console.log(`  ⚠️  未在${where}检测到任何已知 AI 编程工具的标记。\n`);
-    console.log('  为避免装错工具，未做任何安装。请用 --tool 显式指定你的工具，例如：\n');
-    console.log(`    npx superpowers-zh ${flag}--tool claude        # Claude Code / Copilot CLI`);
+
+    // issue #48：用户明明装了 opencode / codex，但项目里没留下标记目录（没跑过、
+    // 或配置在别处），只报「未检测到」很让人懵。扫 PATH 找已装的 CLI，直接给出
+    // 可复制的命令。注意：只提示，绝不自动安装 —— 自动装错工具正是 issue #33。
+    const onPath = Object.entries(CLI_PROBES)
+      .filter(([toolName]) => !isGlobal || pool.some(t => t.name === toolName))
+      .filter(([, bins]) => bins.some(isOnPath));
+
+    if (onPath.length) {
+      // 探到了具体工具就不再列通用示例 —— 直接给可复制的命令，别让用户在一堆
+      // 无关工具名里自己挑。
+      console.log('  不过在 PATH 里找到了这些已安装的 CLI，你要装的应该是其中之一：\n');
+      for (const [toolName] of onPath) {
+        console.log(`    npx superpowers-zh ${flag}--tool ${shortestAlias(toolName).padEnd(13)}# ${toolName}`);
+      }
+      console.log('\n  为避免装错，未自动安装 —— PATH 上装了不代表这个项目要用它。');
+      console.log('  用上面任一条命令显式指定即可。\n');
+    } else {
+      console.log('  为避免装错工具，未做任何安装。请用 --tool 显式指定你的工具，例如：\n');
+      console.log(`    npx superpowers-zh ${flag}--tool claude        # Claude Code / Copilot CLI`);
+      if (isGlobal) {
+        console.log(`    npx superpowers-zh ${flag}--tool codex         # Codex CLI`);
+        console.log(`    npx superpowers-zh ${flag}--tool qoder         # Qoder\n`);
+      } else {
+        console.log(`    npx superpowers-zh ${flag}--tool antigravity   # Google Antigravity`);
+        console.log(`    npx superpowers-zh ${flag}--tool trae          # Trae`);
+        console.log(`    npx superpowers-zh ${flag}--tool cursor        # Cursor\n`);
+      }
+    }
+
     if (isGlobal) {
-      console.log(`    npx superpowers-zh ${flag}--tool codex         # Codex CLI`);
-      console.log(`    npx superpowers-zh ${flag}--tool qoder         # Qoder\n`);
       console.log(`  支持全局安装的工具：${GLOBAL_TARGETS.map(t => t.name).join('、')}\n`);
     } else {
-      console.log(`    npx superpowers-zh ${flag}--tool antigravity   # Google Antigravity`);
-      console.log(`    npx superpowers-zh ${flag}--tool trae          # Trae`);
-      console.log(`    npx superpowers-zh ${flag}--tool cursor        # Cursor\n`);
       console.log(`  全部可用别名：${Object.keys(TOOL_ALIASES).join(', ')}\n`);
     }
     process.exit(1);
