@@ -90,7 +90,7 @@ for entry in "${DETECT[@]}"; do
   T=$(mktemp -d); cd "$T"; mkdir -p "$marker"
   got=$(node "$INS" 2>&1 | grep -oE '✅ [A-Za-z][A-Za-z ]*(\[|:)' | sed 's/✅ //; s/ *[:[]$//' | sort -u | tr '\n' ',' | sed 's/,$//')
   if [ "$got" != "$want" ]; then
-    bad "检测 $marker/ -> 得到「$got」，期望「$want」"
+    bad "检测 ${marker}/ -> 得到「${got}」，期望「${want}」"
   else
     ok
   fi

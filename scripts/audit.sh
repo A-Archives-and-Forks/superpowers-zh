@@ -226,6 +226,82 @@ popd >/dev/null
 rm -rf "$TMP"
 
 #==============================================================================
+hdr "Category 5: 工具计数一致性"
+#==============================================================================
+# 文案里宣称的工具数必须与 installer 实际支持的数量一致。
+#
+# 口径说明：installer 的 TARGETS 是「安装目标」；Copilot CLI 与 Claude Code 共用
+# .claude/skills（别名 copilot -> Claude Code），在 TARGETS 里不占独立条目，但文案
+# 里作为独立产品单独计数 —— 所以「文案工具数 = TARGETS 条目数 + 1」。
+#
+# 加新工具时最容易漏改文案：计数散落在简繁 README、package.json、CLAUDE.md、
+# site/build.mjs、3 份 plugin manifest 十几处。这一类检查专门堵这个。
+
+TARGET_COUNT=$(sed -n '/^const TARGETS = \[/,/^\];/p' "$INSTALLER" | grep -cE "^  \{ name: '")
+EXPECTED_TOOLS=$((TARGET_COUNT + 1))
+echo "  installer TARGETS = $TARGET_COUNT 个安装目标  ->  文案应宣称 $EXPECTED_TOOLS 款"
+
+# check_count <文件> <正则> <说明>：正则匹配到的所有数字都必须等于 EXPECTED_TOOLS
+check_count() {
+  local file="$1" re="$2" label="$3" got n
+  if [ ! -f "$file" ]; then bad "计数检查: $file 不存在"; return; fi
+  got=$(grep -oE "$re" "$file" 2>/dev/null | grep -oE '[0-9]+' | sort -u)
+  if [ -z "$got" ]; then
+    bad "计数检查: ${file} 里没匹配到「${label}」—— 文案改动过？正则需同步更新"
+    return
+  fi
+  for n in $got; do
+    if [ "$n" != "$EXPECTED_TOOLS" ]; then
+      bad "计数不一致: ${file}「${label}」= ${n}，应为 ${EXPECTED_TOOLS}"
+      return
+    fi
+  done
+  ok
+}
+
+# ── 简体 README ──
+check_count README.md '等 \*\*[0-9]+ 款 AI 编程工具\*\*'        '首屏标语'
+check_count README.md '\*\*[0-9]+ 款\*\*：上述'                  '对比表支持工具'
+check_count README.md '\*\*\+\*\* [0-9]+ 款工具一键适配'         '一句话总结'
+check_count README.md '### 🤖 支持 [0-9]+ 款主流'                 '工具表标题'
+check_count README.md '等 [0-9]+ 款工具真正会干活'                 '页脚标语'
+check_count README.md 'across [0-9]+ AI coding tools'            '英文简介'
+
+# ── 繁體 README ──
+check_count README.zh-Hant.md '等 \*\*[0-9]+ 款 AI 編程工具\*\*'  '首屏標語'
+check_count README.zh-Hant.md '\*\*[0-9]+ 款\*\*：上述'           '對比表支援工具'
+check_count README.zh-Hant.md '\*\*\+\*\* [0-9]+ 款工具一鍵適配'  '一句話總結'
+check_count README.zh-Hant.md '### 🤖 支援 [0-9]+ 款主流'          '工具表標題'
+check_count README.zh-Hant.md '等 [0-9]+ 款工具真正會幹活'          '頁腳標語'
+check_count README.zh-Hant.md 'across [0-9]+ AI coding tools'     '英文簡介'
+
+# ── 元数据与 manifest ──
+check_count package.json                    '等 [0-9]+ 款工具'      'npm description'
+check_count CLAUDE.md                       '支持 [0-9]+ 款 IDE/CLI' '贡献者指南'
+check_count .claude-plugin/plugin.json      '等 [0-9]+ 款工具'      'plugin manifest'
+check_count .claude-plugin/marketplace.json '等 [0-9]+ 款工具'      'marketplace manifest'
+check_count .cursor-plugin/plugin.json      '等 [0-9]+ 款工具'      'cursor manifest'
+
+# ── 官网（三语言） ──
+check_count site/build.mjs '[0-9]+ 款 AI 编程工具装上'   '官网简体标语'
+check_count site/build.mjs '[0-9]+ 款 AI 編程工具裝上'   '官网繁體標語'
+check_count site/build.mjs '共 [0-9]+ 款：'              '官网 FAQ 枚举'
+check_count site/build.mjs 'into [0-9]+ AI coding tools' '官网英文标语'
+check_count site/build.mjs '^      \{ q: .Which AI coding tools are supported.*[0-9]+ tools:' '官网英文 FAQ'
+
+# ── 结构性检查：README 工具表的实际行数 ──
+rows=$(awk '/^### 🤖 支持 [0-9]+ 款主流/,/^> 运行 `npx/' README.md | grep -cE '^\| \[')
+if [ "$rows" = "$EXPECTED_TOOLS" ]; then ok; else
+  bad "README 工具表有 $rows 行，应为 $EXPECTED_TOOLS 行（漏加/多加了表格行）"
+fi
+
+# ── 自检：Category 2 测的工具数应等于宣称数（宣称了就必须测） ──
+tools_tested=$(grep -oE '^declare -a TOOLS=\(.*\)' "$0" | sed -E 's/^declare -a TOOLS=\(//; s/\)$//' | wc -w | tr -d ' ')
+if [ "$tools_tested" = "$EXPECTED_TOOLS" ]; then ok; else
+  bad "Category 2 只测了 $tools_tested 款，但文案宣称 $EXPECTED_TOOLS 款（宣称的工具必须都有回归测试）"
+fi
+
+#==============================================================================
 echo ""
 echo "=========================================="
 echo "📊 审计结果"
