@@ -6,6 +6,43 @@
 
 ---
 
+## v1.7.6 (2026-08-08)
+
+**上游 v6.2.0 对齐完成** —— [#19](https://github.com/jnMetaCode/superpowers-zh/issues/19) 的 C 块收尾，`scripts/audit.sh` 的上游结构漂移告警**清零**。
+
+### 🧾 盘点先行：其中 3 项不是风格性改动
+
+C 块表面上是 14 个 `refactor(skills)` commit（"drop social proof"、"drop The Bottom Line"、"fold into rationalization table"），看着像上游在统一自己的文风。开工前做了逐 commit 盘点，判定标准定为**「删掉的文字里有没有别处没写的规则」**——结论纠正了原本的假设：
+
+- **`cfb6281`** 新增了一张 rationalization 表（2 行**全新规则**），替换掉「与工作流的集成」那份清单
+- **`03147d2`** 给 `executing-plans` 加了「先确保隔离工作区」作为**步骤 1**（SDD 那一半已随 A 块完成）
+- **`bc86802`** 把「常见错误」5 个小节 + 「红线」Never/Always 双清单压成 5 行表，**规则一条不少**——这也是此前唯一有客观漂移证据的 skill
+
+### ✂️ 其余各项逐条核实后才删
+
+| skill | 删掉的 | 规则去哪了 |
+|---|---|---|
+| `receiving-code-review` | 「底线」 | 概述已有「核心原则：先验证再实施。先提问再假设」 |
+| `writing-skills` | 「总结」 | 铁律节 + TDD 循环表已完整承载 |
+| `writing-plans` | 「注意事项」 | 精确路径 / `Run:` / 预期输出 三条都**内建在任务结构模板**里——上游是把「告知」改成「示范」 |
+| `brainstorming` | 「核心原则」6 条 | 5 条已在流程详述逐条体现；YAGNI 按上游移到「探索方案」的使用现场 |
+| `systematic-debugging` | 「实际效果」+ 社会证明句 | 核心原则行保留；「相关技能」块折入第四阶段「验证修复」 |
+| `dispatching-parallel-agents` | 「核心优势」「实际效果」 | 验证节保留 |
+| `verification-before-completion` | 「为什么这很重要」「底线」 | 「证据先于宣称」核心原则行保留 |
+| `executing-plans` | 质量宣称、「集成」 | 按上游改写为平铺平台清单 |
+
+### ✅ 验证
+
+**结构**：10 个 skill 的 H2 数与上游逐一对齐（8 个完全相同、2 个差 1）；`executing-plans` / `using-git-worktrees` / `requesting-code-review` 的 `superpowers:` 引用集与上游**完全一致**。
+
+**行为 eval —— 两轮共 11 题全对。** 专门考被删段落里的规则是否仍生效：原生 worktree 工具 vs `git worktree add`（答出「第一大错误」与「幽灵状态」）、跳过 `check-ignore` 的后果、目录名优先级、基线失败能否继续、能否无证据宣称完成、审查建议有疑问时该照做还是反驳、能否先打补丁再查根因、能否自己读 diff 代替派审查者（命中 `cfb6281` 新增表行）、方案里的「以后可能用得上」怎么处理（命中 YAGNI 新落点）。
+
+**回归**：`scripts/audit.sh` **150 pass / 0 warn / 0 fail**、`scripts/verify-release.sh` **82 pass / 0 fail**。
+
+> audit PASS 由 152 降至 150 —— 上游有意删除的两个「集成」节里各有 `superpowers:` 引用，Category 4b 因此少 2 项检查；引用集已核对与上游一致。
+
+---
+
 ## v1.7.5 (2026-08-07)
 
 对齐上游 v6.2.0 的 **B 块 + D 块**（[#19](https://github.com/jnMetaCode/superpowers-zh/issues/19)）。

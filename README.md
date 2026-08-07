@@ -16,7 +16,8 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 >
 > 🌍 Also available in [English](https://aiolaola.com/en?utm_source=github&utm_campaign=superpowers) · [日本語](https://aiolaola.com/ja?utm_source=github&utm_campaign=superpowers) · [Español](https://aiolaola.com/es?utm_source=github&utm_campaign=superpowers) · [한국어](https://aiolaola.com/ko?utm_source=github&utm_campaign=superpowers) · [繁體中文](https://aiolaola.com/zh-Hant?utm_source=github&utm_campaign=superpowers)
 
-> 🆕 **v1.7.5 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.6 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🎯 **上游 v6.2.0 对齐完成** —— audit 的结构漂移告警清零；C 块盘点时发现其中 3 项不是风格改动而是实质新规则
 > - 🐛 **两个 worktree / Gemini 的真问题** —— 修掉 worktree 清理静默空转；更正「Gemini 不支持子智能体」的错误说法（原说法会让 3 个 skill 在 Gemini CLI 上瘸腿）
 > - 🔄 **测试参考重构** —— `testing-anti-patterns` → `writing-good-tests`：从 5 个反模式清单改为两条原则 + 变异检查
 > - 🔄 **SDD 同步上游 v6.2.0** —— plan 作用域工作区（一份过期账本再也不会让控制者跳过整段任务）+ 五轮上限的唤回式修复循环与熔断裁定
