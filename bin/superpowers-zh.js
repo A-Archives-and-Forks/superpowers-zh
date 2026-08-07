@@ -51,7 +51,7 @@ const LEGACY_AGENT_FILENAMES = ['code-reviewer.md'];
 //   global.dir     用户级 skills 目录（相对 home）
 //   global.detect  home 下用于自动检测该工具是否安装的标记目录
 //   global.boot    可选，用户级 bootstrap 文件（相对 home）；无则仅靠 skill 自动发现
-// 无 global 的工具（Cursor/Kiro/Trae/Aider/DeerFlow/VS Code/Hermes/Claw）规则是项目级、
+// 无 global 的工具（Cursor/Kiro/Trae/Aider/DeerFlow/VS Code/Hermes/Claw/Cline/Kilo Code）规则是项目级、
 // 或存在于应用内设置，没有稳定的用户级 skills 加载路径 —— --global 会明确拒绝而非写无效路径。
 const TARGETS = [
   { name: 'Claude Code',   dir: '.claude/skills',           detect: '.claude',                        global: { dir: '.claude/skills',         detect: '.claude',         boot: '.claude/CLAUDE.md' } },
@@ -82,6 +82,13 @@ const TARGETS = [
   // 仅 skills-only —— 其 bootstrap/指令文件约定未证实，靠 CodeArts 自身 skill 发现；
   // 若不自动触发需在对话里手动点名 skill（docs 已说明）。
   { name: 'CodeArts',      dir: '.codeartsdoer/skills',      detect: '.codeartsdoer' },
+  // Cline / Kilo Code 是 VS Code 扩展，加载的是「rules」而非 skills，且 rules 每轮常驻
+  // system prompt。因此 skills 放各自的 skills/ 目录（不被自动加载），只在 rules 目录里
+  // 放一份小索引 —— 见 generateClineBootstrapRule / generateKiloCodeBootstrapRule。
+  // 均无 global：Cline 全局 rules 在 ~/Documents/Cline/Rules（随 OS 变，Linux/WSL 还有
+  // ~/Cline/Rules 回退），不是通用 --global 能可靠覆盖的路径；Kilo 全局需改 kilo.jsonc。
+  { name: 'Cline',         dir: '.cline/skills',             detect: '.clinerules' },
+  { name: 'Kilo Code',     dir: '.kilocode/skills',          detect: ['.kilocode', '.kilo', 'kilo.jsonc'] },
 ];
 
 function countDirs(dir) {
@@ -158,6 +165,95 @@ ${skillTable}
   const rulePath = resolve(rulesDir, 'superpowers-zh.md');
   writeFileSync(rulePath, rule, 'utf8');
   console.log(`  ✅ Trae: bootstrap rule -> ${rulePath}`);
+}
+
+// Cline：`.clinerules/` 下所有 .md / .txt 都会被合并进 system prompt（docs.cline.bot
+// /customization/cline-rules 明确），是常驻开销 —— 所以 20 个 SKILL.md 绝不能放进去，
+// 只放一份小的索引 rule，skills 本体放 .cline/skills/ 由 agent 按需读。
+// 不写 YAML frontmatter：Cline 目前只支持 `paths` 一个条件字段，无 frontmatter 即始终生效。
+// 子目录是否递归扫描官方没写，因此索引 rule 保持在 .clinerules/ 根层、单文件。
+function generateClineBootstrapRule(projectDir) {
+  const rulesDir = resolve(projectDir, '.clinerules');
+  mkdirSync(rulesDir, { recursive: true });
+
+  const skillEntries = scanSkillEntries(SKILLS_SRC);
+  const skillTable = skillEntries.map(s => `| ${s.name} | ${s.desc} |`).join('\n');
+
+  const rule = `# Superpowers-ZH 中文增强版
+
+你已加载 superpowers-zh 技能框架（${skillEntries.length} 个 skills）。
+
+## 核心规则
+
+1. **收到任务时，先检查是否有匹配的 skill** — 哪怕只有 1% 的可能性也要检查
+2. **设计先于编码** — 收到功能需求时，先用 brainstorming skill 做需求分析
+3. **测试先于实现** — 写代码前先写测试（TDD）
+4. **验证先于完成** — 声称完成前必须运行验证命令
+
+## 可用 Skills
+
+Skills 位于 \`.cline/skills/\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
+
+| Skill | 触发条件 |
+|-------|---------|
+${skillTable}
+
+## 如何使用
+
+当任务匹配某个 skill 的触发条件时，用读文件工具打开对应的
+\`.cline/skills/<skill-name>/SKILL.md\`，并严格遵循其流程。
+
+**不要**把 skill 正文复制到本文件 —— \`.clinerules/\` 里的内容每轮都进 prompt，
+按需读取才能把常驻开销控制在这张索引表。
+`;
+
+  const rulePath = resolve(rulesDir, 'superpowers-zh.md');
+  writeFileSync(rulePath, rule, 'utf8');
+  console.log(`  ✅ Cline: bootstrap rule -> ${rulePath}`);
+}
+
+// Kilo Code：v7 起官方推荐 .kilo/rules/ + 在 kilo.jsonc 的 instructions 数组里显式登记，
+// 但那要改用户的 kilo.jsonc（JSONC 带注释，安全合并困难，且属于侵入用户配置）。
+// 官方同时明确 `.kilocode/rules/` 向后兼容且无需配置即生效，故走这条：零配置改动。
+// 与 Cline 同理 —— rules 是常驻开销，只放索引，skills 本体放 .kilocode/skills/。
+function generateKiloCodeBootstrapRule(projectDir) {
+  const rulesDir = resolve(projectDir, '.kilocode', 'rules');
+  mkdirSync(rulesDir, { recursive: true });
+
+  const skillEntries = scanSkillEntries(SKILLS_SRC);
+  const skillTable = skillEntries.map(s => `| ${s.name} | ${s.desc} |`).join('\n');
+
+  const rule = `# Superpowers-ZH 中文增强版
+
+你已加载 superpowers-zh 技能框架（${skillEntries.length} 个 skills）。
+
+## 核心规则
+
+1. **收到任务时，先检查是否有匹配的 skill** — 哪怕只有 1% 的可能性也要检查
+2. **设计先于编码** — 收到功能需求时，先用 brainstorming skill 做需求分析
+3. **测试先于实现** — 写代码前先写测试（TDD）
+4. **验证先于完成** — 声称完成前必须运行验证命令
+
+## 可用 Skills
+
+Skills 位于 \`.kilocode/skills/\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
+
+| Skill | 触发条件 |
+|-------|---------|
+${skillTable}
+
+## 如何使用
+
+当任务匹配某个 skill 的触发条件时，用读文件工具打开对应的
+\`.kilocode/skills/<skill-name>/SKILL.md\`，并严格遵循其流程。
+
+**不要**把 skill 正文复制到本文件 —— rules 每轮都进 prompt，按需读取才能把
+常驻开销控制在这张索引表。
+`;
+
+  const rulePath = resolve(rulesDir, 'superpowers-zh.md');
+  writeFileSync(rulePath, rule, 'utf8');
+  console.log(`  ✅ Kilo Code: bootstrap rule -> ${rulePath}`);
 }
 
 function generateQoderBootstrap(baseDir, isGlobal) {
@@ -548,6 +644,10 @@ const TOOL_ALIASES = {
   'codeartsdoer': 'CodeArts',
   'codearts-doer': 'CodeArts',
   'huawei':       'CodeArts',
+  'cline':        'Cline',
+  'kilocode':     'Kilo Code',
+  'kilo':         'Kilo Code',
+  'kilo-code':    'Kilo Code',
 };
 
 function showHelp() {
@@ -634,6 +734,14 @@ function installForTarget(target, baseDir, isGlobal) {
   if (target.name === 'CodeBuddy') {
     generateCodeBuddyBootstrap(baseDir);
   }
+
+  if (target.name === 'Cline') {
+    generateClineBootstrapRule(baseDir);
+  }
+
+  if (target.name === 'Kilo Code') {
+    generateKiloCodeBootstrapRule(baseDir);
+  }
 }
 
 function isHomeDir(p) {
@@ -649,6 +757,8 @@ const BOOTSTRAP_DELETE = [
   '.trae/rules/superpowers-zh.md',
   '.qoder/rules/superpowers-zh.md',
   '.agents/rules.md',
+  '.clinerules/superpowers-zh.md',
+  '.kilocode/rules/superpowers-zh.md',
 ];
 const BOOTSTRAP_CLEAN_SECTION = [
   'CLAUDE.md',
@@ -882,7 +992,7 @@ function install(forceToolName, force, isGlobal) {
     if (isGlobal && !target.global) {
       // 部分工具（如 Gemini CLI 的扩展目录）有专属全局方式，但与通用 --global 复制机制不同，
       // 指向对应 docs；其余工具规则为项目级或存于应用内设置，无稳定用户级路径。
-      const docSlug = { 'Gemini CLI': 'gemini-cli', 'Antigravity': 'antigravity', 'Trae': 'trae', 'Aider': 'aider', 'Hermes Agent': 'hermes', 'Kiro': 'kiro' }[target.name];
+      const docSlug = { 'Gemini CLI': 'gemini-cli', 'Antigravity': 'antigravity', 'Trae': 'trae', 'Aider': 'aider', 'Hermes Agent': 'hermes', 'Kiro': 'kiro', 'Cline': 'cline', 'Kilo Code': 'kilocode' }[target.name];
       console.error(
 `  ❌ ${target.name} 不支持通用全局安装（--global）。
 
