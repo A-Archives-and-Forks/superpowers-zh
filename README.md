@@ -16,10 +16,10 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 >
 > 🌍 Also available in [English](https://aiolaola.com/en?utm_source=github&utm_campaign=superpowers) · [日本語](https://aiolaola.com/ja?utm_source=github&utm_campaign=superpowers) · [Español](https://aiolaola.com/es?utm_source=github&utm_campaign=superpowers) · [한국어](https://aiolaola.com/ko?utm_source=github&utm_campaign=superpowers) · [繁體中文](https://aiolaola.com/zh-Hant?utm_source=github&utm_campaign=superpowers)
 
-> 🆕 **v1.7.0 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
-> - 🌍 **全局安装** `npx superpowers-zh --global` —— 一次安装、所有项目共享，多项目党告别逐个重装
-> - 🧩 新增 **腾讯 CodeBuddy** 与 **华为云码道 CodeArts** 两款国产 IDE（工具数 18 → 20）
-> - 🌐 官网 [sp.aiolaola.com](https://sp.aiolaola.com) + README 新增**繁体中文**（简 / 繁 / EN 三语）
+> 🆕 **v1.7.2 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🧩 新增 **Cline** 与 **Kilo Code** 两款 VS Code 扩展（工具数 20 → 22）—— 按 rules 常驻开销做了专门设计，索引仅 4.5 KB
+> - 🔧 检测落空时会扫 PATH 给出**可直接复制的 `--tool` 命令**，不再只报「未检测到」
+> - 📦 README 补上 **Plugin Marketplace 安装方式**（`claude plugin marketplace add`，升级只需一条命令）
 
 ### 📊 项目规模
 
@@ -227,7 +227,7 @@ claude plugin install superpowers-zh@superpowers-zh
 
 ```
   ❯ superpowers-zh@superpowers-zh
-    Version: 1.7.1
+    Version: <当前版本>
     Scope: user
     Status: ✔ enabled
 ```

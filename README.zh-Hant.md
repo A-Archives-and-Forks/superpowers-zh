@@ -16,10 +16,10 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 
 > 📖 **免費配套學習** → [從零學會 AI 編程](https://aiolaola.com/?utm_source=github&utm_campaign=superpowers)：180 節免費實操課 + 《AI 編程實戰三卷書》線上閱讀 + 實戰社群 · superpowers 裝好後配上方法論效率翻倍 · 永久免費
 
-> 🆕 **v1.7.0 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
-> - 🌍 **全域安裝** `npx superpowers-zh --global` —— 一次安裝、所有專案共享，多專案使用者告別逐個重裝
-> - 🧩 新增 **騰訊 CodeBuddy** 與 **華為雲碼道 CodeArts** 兩款國產 IDE（工具數 18 → 20）
-> - 🌐 官網 [sp.aiolaola.com](https://sp.aiolaola.com) + README 新增**繁體中文**（簡 / 繁 / EN 三語）
+> 🆕 **v1.7.2 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🧩 新增 **Cline** 與 **Kilo Code** 兩款 VS Code 外掛（工具數 20 → 22）—— 針對 rules 常駐開銷做了專門設計，索引僅 4.5 KB
+> - 🔧 偵測落空時會掃 PATH 給出**可直接複製的 `--tool` 命令**，不再只報「未偵測到」
+> - 📦 README 補上 **Plugin Marketplace 安裝方式**（`claude plugin marketplace add`，升級只需一條命令）
 
 ### 📊 專案規模
 
@@ -227,7 +227,7 @@ claude plugin install superpowers-zh@superpowers-zh
 
 ```
   ❯ superpowers-zh@superpowers-zh
-    Version: 1.7.1
+    Version: <当前版本>
     Scope: user
     Status: ✔ enabled
 ```
