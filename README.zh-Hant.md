@@ -16,7 +16,8 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 
 > 📖 **免費配套學習** → [從零學會 AI 編程](https://aiolaola.com/?utm_source=github&utm_campaign=superpowers)：180 節免費實操課 + 《AI 編程實戰三卷書》線上閱讀 + 實戰社群 · superpowers 裝好後配上方法論效率翻倍 · 永久免費
 
-> 🆕 **v1.7.6 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.7 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🆕 **新增 Crush**（工具數 22 → 23）—— 若你已為 CC / Cursor / Codex 裝過，Crush 其實已經能讀到，別重複裝
 > - 🎯 **上游 v6.2.0 對齊完成** —— audit 的結構漂移告警清零；C 塊盤點時發現其中 3 項不是風格改動而是實質新規則
 > - 🐛 **兩個 worktree / Gemini 的真問題** —— 修掉 worktree 清理靜默空轉；更正「Gemini 不支援子智能體」的錯誤說法（原說法會讓 3 個 skill 在 Gemini CLI 上瘸腿）
 > - 🔄 **測試參考重構** —— `testing-anti-patterns` → `writing-good-tests`：從 5 個反模式清單改為兩條原則 + 變異檢查
