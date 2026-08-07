@@ -16,7 +16,9 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 >
 > 🌍 Also available in [English](https://aiolaola.com/en?utm_source=github&utm_campaign=superpowers) · [日本語](https://aiolaola.com/ja?utm_source=github&utm_campaign=superpowers) · [Español](https://aiolaola.com/es?utm_source=github&utm_campaign=superpowers) · [한국어](https://aiolaola.com/ko?utm_source=github&utm_campaign=superpowers) · [繁體中文](https://aiolaola.com/zh-Hant?utm_source=github&utm_campaign=superpowers)
 
-> 🆕 **v1.7.4 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.5 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🐛 **两个 worktree / Gemini 的真问题** —— 修掉 worktree 清理静默空转；更正「Gemini 不支持子智能体」的错误说法（原说法会让 3 个 skill 在 Gemini CLI 上瘸腿）
+> - 🔄 **测试参考重构** —— `testing-anti-patterns` → `writing-good-tests`：从 5 个反模式清单改为两条原则 + 变异检查
 > - 🔄 **SDD 同步上游 v6.2.0** —— plan 作用域工作区（一份过期账本再也不会让控制者跳过整段任务）+ 五轮上限的唤回式修复循环与熔断裁定
 > - 🪟 **Windows bootstrap 修复** —— SessionStart hook 改经 Git Bash 分发（同步上游），hook 不加载 skill 就是死重
 > - 🧩 新增 **Cline** 与 **Kilo Code** 两款 VS Code 扩展（工具数 20 → 22）—— 按 rules 常驻开销做了专门设计，索引仅 4.5 KB

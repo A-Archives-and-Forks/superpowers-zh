@@ -16,7 +16,9 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 
 > 📖 **免費配套學習** → [從零學會 AI 編程](https://aiolaola.com/?utm_source=github&utm_campaign=superpowers)：180 節免費實操課 + 《AI 編程實戰三卷書》線上閱讀 + 實戰社群 · superpowers 裝好後配上方法論效率翻倍 · 永久免費
 
-> 🆕 **v1.7.4 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.5 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🐛 **兩個 worktree / Gemini 的真問題** —— 修掉 worktree 清理靜默空轉；更正「Gemini 不支援子智能體」的錯誤說法（原說法會讓 3 個 skill 在 Gemini CLI 上瘸腿）
+> - 🔄 **測試參考重構** —— `testing-anti-patterns` → `writing-good-tests`：從 5 個反模式清單改為兩條原則 + 變異檢查
 > - 🔄 **SDD 同步上游 v6.2.0** —— plan 作用域工作區（一份過期帳本再也不會讓控制者跳過整段任務）+ 五輪上限的喚回式修復循環與熔斷裁定
 > - 🪟 **Windows bootstrap 修復** —— SessionStart hook 改經 Git Bash 分發（同步上游），hook 不載入 skill 就是死重
 > - 🧩 新增 **Cline** 與 **Kilo Code** 兩款 VS Code 外掛（工具數 20 → 22）—— 針對 rules 常駐開銷做了專門設計，索引僅 4.5 KB
