@@ -153,6 +153,14 @@ else
   done
 
   # 3c. 14 翻译 skill 结构层级（H1-H4 标题数）
+  #
+  # 必须排除 ``` 围栏内的行：shell 注释（`# 运行测试`）同样匹配 ^#{1,4} ，
+  # 会被当成 markdown 标题数进去。用 grep 直接数的话，一个 skill 里多几行
+  # bash 注释就能凭空造出「结构漂移」—— executing-plans 与
+  # finishing-a-development-branch 两条告警此前就是这么来的假阳性。
+  count_headings() {  # 读 stdin，只数围栏之外的 H1-H4
+    awk '/^```/{fence = !fence; next} !fence && /^#{1,4} /{n++} END{print n+0}'
+  }
   declare -a SKILLS=(brainstorming dispatching-parallel-agents executing-plans \
     finishing-a-development-branch receiving-code-review requesting-code-review \
     subagent-driven-development systematic-debugging test-driven-development \
@@ -160,8 +168,8 @@ else
     writing-plans writing-skills)
 
   for s in "${SKILLS[@]}"; do
-    up=$(git show upstream/main:skills/$s/SKILL.md 2>/dev/null | grep -cE '^#{1,4} ' || echo 0)
-    our=$(grep -cE '^#{1,4} ' "skills/$s/SKILL.md" 2>/dev/null || echo 0)
+    up=$(git show upstream/main:skills/$s/SKILL.md 2>/dev/null | count_headings || echo 0)
+    our=$(count_headings < "skills/$s/SKILL.md" 2>/dev/null || echo 0)
     diff=$((up - our))
     abs=${diff#-}
     # 允许 3 个 header 差异（翻译造成的合并/拆分小幅波动）
@@ -173,8 +181,8 @@ else
   done
 
   # 3d. requesting-code-review/code-reviewer.md 结构（v5.1.0 self-contained）
-  up=$(git show upstream/main:skills/requesting-code-review/code-reviewer.md 2>/dev/null | grep -cE '^#{1,3} ' || echo 0)
-  our=$(grep -cE '^#{1,3} ' skills/requesting-code-review/code-reviewer.md)
+  up=$(git show upstream/main:skills/requesting-code-review/code-reviewer.md 2>/dev/null | count_headings || echo 0)
+  our=$(count_headings < skills/requesting-code-review/code-reviewer.md)
   diff=$((up - our))
   abs=${diff#-}
   if [ "$abs" -le "2" ]; then

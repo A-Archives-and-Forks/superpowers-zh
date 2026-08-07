@@ -50,6 +50,9 @@ npm test / cargo test / pytest / go test ./...
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
 GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
+# 现在就捕获 —— 此刻还在工作区里面。步骤 5 会切换目录，
+# 而清理（步骤 6）需要这个值
+WORKTREE_PATH=$(git rev-parse --show-toplevel)
 ```
 
 这决定了展示哪种菜单、以及清理方式：
@@ -129,6 +132,8 @@ git branch -d <feature-branch>
 ```bash
 # 推送分支
 git push -u origin <feature-branch>
+# 从分离 HEAD 出发时，在远端指定新分支名：
+# git push origin HEAD:refs/heads/<new-branch>
 
 # 创建 PR
 gh pr create --title "<title>" --body "$(cat <<'EOF'
@@ -179,21 +184,15 @@ git branch -D <feature-branch>
 
 ### 步骤 6：清理工作区
 
-**只对选项 1 和 4 执行。** 选项 2 和 3 始终保留 worktree。
+**只对选项 1 和 4 执行。** 选项 2 和 3 始终保留 worktree。两个调用方都已经切到主仓库根目录了 —— 移除 worktree 必须从 worktree 外面执行 —— 因此这里使用**步骤 2 里捕获的** `GIT_DIR` / `GIT_COMMON` / `WORKTREE_PATH`，也就是那次目录切换之前的值。
 
-```bash
-GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
-GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
-WORKTREE_PATH=$(git rev-parse --show-toplevel)
-```
+> ⚠️ **不要在这里重新计算这些值。** 此刻 `git rev-parse --show-toplevel` 返回的是主仓库根目录，不是 worktree 路径 —— 溯源判断会永远匹配不上，清理会静默空转，随后分支删除还会因为 worktree 仍挂着而失败。
 
 **如果 `GIT_DIR == GIT_COMMON`：** 普通仓库，无 worktree 可清理。结束。
 
-**如果 worktree 路径在 `.worktrees/` 或 `worktrees/` 之下：** 这是 Superpowers 创建的 worktree —— 我们负责清理。
+**如果 `WORKTREE_PATH` 在 `.worktrees/` 或 `worktrees/` 之下：** 这是 Superpowers 创建的 worktree —— 我们负责清理。
 
 ```bash
-MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
-cd "$MAIN_ROOT"
 git worktree remove "$WORKTREE_PATH"
 git worktree prune  # 自愈：清理任何过期的注册记录
 ```
