@@ -212,7 +212,35 @@ npx superpowers-zh --global --tool claude   # 或指定工具
 | 适合 | 单项目、需项目内版本固定 | 多项目、想一次装好到处可用 |
 | 卸载 | `npx superpowers-zh --uninstall` | `npx superpowers-zh --global --uninstall` |
 
-### 方式二：手动安装（low-fidelity，仅作备选）
+### 方式二：Claude Code Plugin Marketplace
+
+**仅限 Claude Code。** 走官方 plugin 机制装，好处是升级只要一条 `claude plugin update`，不用重跑 npx：
+
+```bash
+claude plugin marketplace add jnMetaCode/superpowers-zh
+claude plugin install superpowers-zh@superpowers-zh
+```
+
+装完 `claude plugin list` 应该看到：
+
+```
+  ❯ superpowers-zh@superpowers-zh
+    Version: 1.7.1
+    Scope: user
+    Status: ✔ enabled
+```
+
+升级与卸载：
+
+```bash
+claude plugin marketplace update superpowers-zh          # 先刷新 marketplace 缓存
+claude plugin update superpowers-zh@superpowers-zh       # 再升级 plugin（需重启生效）
+claude plugin uninstall superpowers-zh@superpowers-zh    # 卸载
+```
+
+> **和方式一怎么选？** marketplace 装的是**完整 plugin**（skills + hooks + bootstrap 由 Claude Code 统一托管、随版本更新），但只服务 Claude Code 一款工具。要装给其余 19 款工具，仍然用方式一的 `npx superpowers-zh`。两者可以共存，但同一个项目里别重复装 Claude Code，否则 skills 会出现两份。
+
+### 方式三：手动安装（low-fidelity，仅作备选）
 
 > ⚠️ **手动 `cp -r skills` 是低保版安装，不等同于完整 plugin。**
 >
@@ -246,7 +274,7 @@ cp -r superpowers-zh/skills /your/project/.claw/skills       # Claw Code（Rust 
 cp -r superpowers-zh/skills /your/project/.qoder/skills      # Qoder（阿里 AI IDE）
 ```
 
-### 方式三：在配置文件中引用
+### 方式四：在配置文件中引用
 
 根据你使用的工具，在对应配置文件中引用 skills：
 
