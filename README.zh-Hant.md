@@ -33,11 +33,30 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 
 <table>
 <tr>
-<td width="400" align="center">
-<a href="https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh"><img src="assets/sponsors/compshare.jpg" width="380" alt="優雲智算 by UCloud — 熱門國產模型按次調用套餐包"></a>
+<td width="25%">
+  <a href="https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh">
+    <img src="assets/sponsors/compshare.jpg" alt="優雲智算 by UCloud — 熱門國產模型按次調用套餐包，低至 49 元/月起" width="100%">
+  </a>
 </td>
-<td>
-感謝 <a href="https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh"><b>優雲智算</b></a> 贊助本專案！優雲智算是 UCloud 旗下 AI 雲平台，主打包月、按次的高性價比國模 Agent Plan 方案，支援 GLM-5.2，低至 <b>49 元/月</b>起。同時提供官轉穩定海外模型。支援接入 Claude Code、Codex 及 API 呼叫。支援企業高併發、7×24 技術支援、自助開票。<br><br>🎁 透過<a href="https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh">此連結</a>註冊的使用者，可得<b>免費 5 元平台體驗金</b>！
+<td width="75%" valign="middle">
+
+感謝 [優雲智算](https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh) 贊助本專案！優雲智算是 UCloud 旗下 AI 雲平台，主打包月、按次的高性價比國模 Agent Plan 方案，支援 GLM-5.2，低至 **49 元/月**起。同時提供官轉穩定海外模型。支援接入 Claude Code、Codex 及 API 呼叫。支援企業高併發、7×24 技術支援、自助開票。🎁 **透過[此連結](https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh)註冊的使用者，可得免費 5 元平台體驗金！**
+
+</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="25%">
+  <a href="https://cubence.com/signup?code=SCW29JP9">
+    <img src="assets/sponsors/cubence.jpg" alt="Cubence — 專業 AI API 閘道，穩定高效的 API 中轉服務，支援 Claude Code、Codex、Gemini 等多種模型" width="100%">
+  </a>
+</td>
+<td width="75%" valign="middle">
+
+感謝 [Cubence](https://cubence.com/signup?code=SCW29JP9) 對本專案的支持。Cubence 是一家致力為客戶提供穩定、高效的 API 中轉服務商。從 25 年 9 月營運至今，提供了 Claude Code、Codex、Gemini 等多種模型支援。🎁 **Cubence 為本開源專案的使用者提供了特別的專屬優惠 `AGENCY`，在首次購買時享受 9 折優惠！**
+
 </td>
 </tr>
 </table>
