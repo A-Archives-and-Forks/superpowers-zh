@@ -16,7 +16,8 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 
 > 📖 **免費配套學習** → [從零學會 AI 編程](https://aiolaola.com/?utm_source=github&utm_campaign=superpowers)：180 節免費實操課 + 《AI 編程實戰三卷書》線上閱讀 + 實戰社群 · superpowers 裝好後配上方法論效率翻倍 · 永久免費
 
-> 🆕 **v1.7.2 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.3 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🪟 **Windows bootstrap 修復** —— SessionStart hook 改經 Git Bash 分發（同步上游），hook 不載入 skill 就是死重
 > - 🧩 新增 **Cline** 與 **Kilo Code** 兩款 VS Code 外掛（工具數 20 → 22）—— 針對 rules 常駐開銷做了專門設計，索引僅 4.5 KB
 > - 🔧 偵測落空時會掃 PATH 給出**可直接複製的 `--tool` 命令**，不再只報「未偵測到」
 > - 📦 README 補上 **Plugin Marketplace 安裝方式**（`claude plugin marketplace add`，升級只需一條命令）

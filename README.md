@@ -16,7 +16,8 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 >
 > 🌍 Also available in [English](https://aiolaola.com/en?utm_source=github&utm_campaign=superpowers) · [日本語](https://aiolaola.com/ja?utm_source=github&utm_campaign=superpowers) · [Español](https://aiolaola.com/es?utm_source=github&utm_campaign=superpowers) · [한국어](https://aiolaola.com/ko?utm_source=github&utm_campaign=superpowers) · [繁體中文](https://aiolaola.com/zh-Hant?utm_source=github&utm_campaign=superpowers)
 
-> 🆕 **v1.7.2 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.3 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🪟 **Windows bootstrap 修复** —— SessionStart hook 改经 Git Bash 分发（同步上游），hook 不加载 skill 就是死重
 > - 🧩 新增 **Cline** 与 **Kilo Code** 两款 VS Code 扩展（工具数 20 → 22）—— 按 rules 常驻开销做了专门设计，索引仅 4.5 KB
 > - 🔧 检测落空时会扫 PATH 给出**可直接复制的 `--tool` 命令**，不再只报「未检测到」
 > - 📦 README 补上 **Plugin Marketplace 安装方式**（`claude plugin marketplace add`，升级只需一条命令）
