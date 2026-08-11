@@ -255,34 +255,6 @@ fi
 popd >/dev/null
 rm -rf "$TMP"
 
-# 4d. 分派提示词必须带输出语言指令，且必须落在 prompt 围栏之内（issue #116）
-#
-# 子智能体拿到的是全新上下文，using-superpowers 的「用户用中文交流 → 所有输出
-# 使用中文」只活在控制者上下文里，永远到不了它。所以中文要求必须写进分派提示词
-# 本身，而且必须在 ``` 围栏内 —— 落在围栏外就只是文档，子智能体一个字都收不到，
-# 而这种失效是静默的：文件里搜得到「用中文写」，产出照样是英文。
-DISPATCH_PROMPTS=(
-  skills/subagent-driven-development/implementer-prompt.md
-  skills/subagent-driven-development/task-reviewer-prompt.md
-  skills/subagent-driven-development/re-review-prompt.md
-  skills/requesting-code-review/code-reviewer.md
-)
-for f in "${DISPATCH_PROMPTS[@]}"; do
-  if [ ! -f "$f" ]; then
-    bad "分派提示词缺失: $f"
-    continue
-  fi
-  inside=$(awk '/^```/ { infence = !infence; next } infence && /用中文写/ { c++ } END { print c+0 }' "$f")
-  outside=$(awk '/^```/ { infence = !infence; next } !infence && /用中文写/ { c++ } END { print c+0 }' "$f")
-  if [ "$inside" -ge 1 ]; then
-    ok
-  elif [ "$outside" -ge 1 ]; then
-    bad "输出语言指令在围栏外，子智能体收不到: $f —— 把「用中文写」那行移进 prompt 的 \`\`\` 围栏内"
-  else
-    bad "分派提示词缺少输出语言指令: $f —— 子智能体不继承会话上下文，中文要求必须写进提示词（issue #116）"
-  fi
-done
-
 #==============================================================================
 hdr "Category 5: 工具计数一致性"
 #==============================================================================

@@ -5,10 +5,6 @@
 
 **目的：** 核实一个任务的实现与其需求匹配（不多不少）且构建良好（整洁、有测试、可维护）
 
-> **superpowers-zh 增量：** 「输出格式」里的输出语言一行是本 fork 追加的，上游没有。
-> 理由同 [implementer-prompt.md](implementer-prompt.md)：子智能体不继承会话上下文，
-> `using-superpowers` 的中文路由规则到不了它。
-
 ```
 Subagent (general-purpose):
   description: "审查任务 N（规格 + 质量）"
@@ -125,10 +121,6 @@ Subagent (general-purpose):
     信任其余的反馈。
 
     ## 输出格式
-
-    **用中文写。** 结论、发现描述和理由都用中文。代码、标识符、命令、
-    file:line 引用和测试输出照原样保留，不要翻译。ADDRESSED 之类的
-    状态词、以及 ✅/❌/⚠️ 标记保持原样。
 
     ### 规格合规性
 
