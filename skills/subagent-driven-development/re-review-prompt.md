@@ -6,6 +6,10 @@
 
 **目的：** 核实上一次审查的每一条发现都已解决，且修复本身没有破坏任何东西。
 
+> **superpowers-zh 增量：** 「输出格式」里的输出语言一行是本 fork 追加的，上游没有。
+> 理由同 [implementer-prompt.md](implementer-prompt.md)：子智能体不继承会话上下文，
+> `using-superpowers` 的中文路由规则到不了它。
+
 ```
 Subagent (general-purpose):
   description: "复审任务 N 第 R 轮修复"
@@ -58,6 +62,10 @@ Subagent (general-purpose):
     具体疑问时才跑测试——而且只跑一个聚焦的测试，绝不跑整包套件。
 
     ## 输出格式
+
+    **用中文写。** 结论、发现描述和理由都用中文。代码、标识符、命令、
+    file:line 引用和测试输出照原样保留，不要翻译。ADDRESSED / NOT ADDRESSED
+    这两个状态词保持原样——控制者按它们做判定。
 
     你的最终消息就是报告本身：直接从第一条发现的结论开始。每一行都应该是
     一个结论、一条带 file:line 的发现，或者一项你实际做过的检查——
