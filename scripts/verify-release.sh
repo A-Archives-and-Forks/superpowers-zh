@@ -28,7 +28,7 @@ bad()  { FAIL=$((FAIL+1)); FAILURES+=("$1"); printf '  ❌ %s\n' "$1"; }
 # 工具别名 -> 期望的 skills 目录（相对项目根）
 declare -a SPEC=(
   "claude:.claude/skills"          "cursor:.cursor/skills"        "codex:.codex/skills"
-  "kiro:.kiro/steering"            "deerflow:skills/custom"       "trae:.trae/skills"
+  "kiro:.kiro/skills"                  "deerflow:skills/custom"       "trae:.trae/skills"
   "antigravity:.agents/skills"     "vscode:.github/superpowers"   "openclaw:skills"
   "windsurf:.windsurf/skills"      "gemini:.gemini/skills"        "aider:.aider/skills"
   "opencode:.opencode/skills"      "qwen:.qwen/skills"            "hermes:.hermes/skills"
@@ -151,6 +151,30 @@ R="$T/.kilocode/rules/superpowers-zh.md"
 rows=$(grep -cE '^\| [a-z][a-z0-9-]+ \|' "$R")
 [ "$rows" = "$EXPECT_SKILLS" ] && ok || bad "Kilo 索引表 $rows 行，期望 $EXPECT_SKILLS"
 grep -q '\.kilocode/skills/' "$R" && ok || bad "Kilo 索引未指向 .kilocode/skills/"
+cd /; rm -rf "$T"
+
+T=$(mktemp -d); cd "$T"; node "$INS" --tool kiro >/dev/null 2>&1
+R="$T/.kiro/steering/superpowers-zh.md"
+[ -f "$R" ] && ok || bad "Kiro steering 索引未生成"
+head -2 "$R" | grep -q '^inclusion: always' && ok || bad "Kiro 索引缺 inclusion: always frontmatter"
+rows=$(grep -cE '^\| [a-z][a-z0-9-]+ \|' "$R")
+[ "$rows" = "$EXPECT_SKILLS" ] && ok || bad "Kiro 索引表 $rows 行，期望 $EXPECT_SKILLS"
+grep -q '\.kiro/skills/' "$R" && ok || bad "Kiro 索引未指向 .kiro/skills/"
+# 回归守卫：steering 每轮常驻，里面只能有索引这一个文件。v1.7.9 曾把 20 个 skill
+# 正文装在这里 —— 47 个 md、335 KB 每轮进 prompt。别再退回去。
+steer_md=$(find "$T/.kiro/steering" -name '*.md' | wc -l | tr -d ' ')
+[ "$steer_md" = "1" ] && ok || bad "Kiro steering 下有 $steer_md 个 md（只该有索引 1 个）—— 正文不能放常驻目录"
+steer_bytes=$(find "$T/.kiro/steering" -name '*.md' -exec cat {} + | wc -c | tr -d ' ')
+[ "$steer_bytes" -lt 20000 ] && ok || bad "Kiro steering 常驻 $steer_bytes 字节，超过 20 KB 阈值"
+cd /; rm -rf "$T"
+
+# 升级路径：旧布局（正文躺在 steering 下）必须被清掉，否则新旧并存等于没修
+T=$(mktemp -d); cd "$T"; mkdir -p .kiro/steering/brainstorming
+echo "旧正文" > .kiro/steering/brainstorming/SKILL.md
+printf -- '---\ninclusion: always\n---\n我自己的规则\n' > .kiro/steering/my-own.md
+node "$INS" --tool kiro >/dev/null 2>&1
+[ -d "$T/.kiro/steering/brainstorming" ] && bad "Kiro 升级未清理旧布局 .kiro/steering/<skill>/" || ok
+[ -f "$T/.kiro/steering/my-own.md" ] && ok || bad "Kiro 升级误删了用户自己的 steering 文件"
 cd /; rm -rf "$T"
 
 echo ""

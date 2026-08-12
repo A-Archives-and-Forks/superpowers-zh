@@ -59,7 +59,15 @@ const TARGETS = [
   // Codex 全局：docs 确认 Codex 启动时扫描 ~/.agents/skills/（不是 ~/.codex/skills），
   // 直接把每个 skill 复制到 ~/.agents/skills/<skill>/ 正好命中它的扁平扫描。
   { name: 'Codex CLI',     dir: '.codex/skills',            detect: '.codex',                         global: { dir: '.agents/skills',         detect: '.codex' } },
-  { name: 'Kiro',          dir: '.kiro/steering',            detect: '.kiro' },
+  // Kiro 的 steering 与 Cline / Kilo 的 rules 同性质：**每轮常驻**。官方文档
+  // （kiro.dev/docs/steering）明确 `.kiro/steering/` 下的文件默认 inclusion: always，
+  // "loaded into every Kiro interaction automatically"。
+  // v1.7.9 及更早把 20 个 skill 整个装进 .kiro/steering/ —— 实测 47 个 md、335 KB，
+  // 每一轮全量进上下文。改为与 Cline / Kilo 同一套：skills 放 .kiro/skills/（不被
+  // 自动加载），只在 steering 里放一份带 inclusion: always 的小索引。
+  // 注意 Kiro 的 frontmatter 键是 inclusion / fileMatchPattern，不是 Cursor 系的
+  // alwaysApply / globs —— 我们旧文档写错过，见 docs/README.kiro.md。
+  { name: 'Kiro',          dir: '.kiro/skills',              detect: '.kiro' },
   { name: 'DeerFlow',      dir: 'skills/custom',             detect: 'deer_flow' },
   { name: 'Trae',          dir: '.trae/skills',              detect: '.trae' },
   // Antigravity 无 global：其全局 skills 加载路径未在 docs 证实（全局规则走 ~/.gemini/GEMINI.md），
@@ -227,6 +235,68 @@ ${skillTable}
   const rulePath = resolve(rulesDir, 'superpowers-zh.md');
   writeFileSync(rulePath, rule, 'utf8');
   console.log(`  ✅ Cline: bootstrap rule -> ${rulePath}`);
+}
+
+// Kiro：steering 每轮常驻，所以这里只放索引，skill 正文放 .kiro/skills/ 按需读取。
+// frontmatter 用 Kiro 自己的 inclusion: always（不是 Cursor 系的 alwaysApply）。
+function generateKiroSteeringIndex(projectDir) {
+  const steeringDir = resolve(projectDir, '.kiro', 'steering');
+  mkdirSync(steeringDir, { recursive: true });
+
+  const skillEntries = scanSkillEntries(SKILLS_SRC);
+
+  // 先清掉旧布局：v1.7.9 及更早把 skill 正文装在 .kiro/steering/<skill>/。
+  // 升级的人通常直接重装而不会先卸载，不清的话新旧两份并存，335 KB 的常驻开销
+  // 一点没减 —— 这才是本次要修的东西。只删我们自己装过的那些 skill 同名目录。
+  const ourSkillNames = new Set(skillEntries.map(s => s.name));
+  let legacyRemoved = 0;
+  for (const entry of readdirSync(steeringDir, { withFileTypes: true })) {
+    if (entry.isDirectory() && ourSkillNames.has(entry.name)) {
+      rmSync(resolve(steeringDir, entry.name), { recursive: true, force: true });
+      legacyRemoved++;
+    }
+  }
+  if (legacyRemoved > 0) {
+    console.log(`  🧹 Kiro: 清理旧布局 ${legacyRemoved} 个 skill 目录 <- .kiro/steering/`);
+    console.log(`     （旧版把正文放在这里，而 steering 每轮常驻，会一直进 prompt）`);
+  }
+  const skillTable = skillEntries.map(s => `| ${s.name} | ${s.desc} |`).join('\n');
+
+  const rule = `---
+inclusion: always
+---
+
+# Superpowers-ZH 中文增强版
+
+你已加载 superpowers-zh 技能框架（${skillEntries.length} 个 skills）。
+
+## 核心规则
+
+1. **收到任务时，先检查是否有匹配的 skill** — 哪怕只有 1% 的可能性也要检查
+2. **设计先于编码** — 收到功能需求时，先用 brainstorming skill 做需求分析
+3. **测试先于实现** — 写代码前先写测试（TDD）
+4. **验证先于完成** — 声称完成前必须运行验证命令
+
+## 可用 Skills
+
+Skills 位于 \`.kiro/skills/\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
+
+| Skill | 触发条件 |
+|-------|---------|
+${skillTable}
+
+## 如何使用
+
+当任务匹配某个 skill 的触发条件时，用读文件工具打开对应的
+\`.kiro/skills/<skill-name>/SKILL.md\`，并严格遵循其流程。
+
+**不要**把 skill 正文复制到本文件 —— \`.kiro/steering/\` 里的内容每轮都进 prompt，
+按需读取才能把常驻开销控制在这张索引表。
+`;
+
+  const rulePath = resolve(steeringDir, 'superpowers-zh.md');
+  writeFileSync(rulePath, rule, 'utf8');
+  console.log(`  ✅ Kiro: steering 索引 -> ${rulePath}`);
 }
 
 // Kilo Code：v7 起官方推荐 .kilo/rules/ + 在 kilo.jsonc 的 instructions 数组里显式登记，
@@ -796,6 +866,10 @@ function installForTarget(target, baseDir, isGlobal) {
     generateCodeBuddyBootstrap(baseDir);
   }
 
+  if (target.name === 'Kiro') {
+    generateKiroSteeringIndex(baseDir);
+  }
+
   if (target.name === 'Cline') {
     generateClineBootstrapRule(baseDir);
   }
@@ -820,7 +894,13 @@ const BOOTSTRAP_DELETE = [
   '.agents/rules.md',
   '.clinerules/superpowers-zh.md',
   '.kilocode/rules/superpowers-zh.md',
+  '.kiro/steering/superpowers-zh.md',
 ];
+
+// v1.7.9 及更早把 skill 正文直接装进 .kiro/steering/<skill>/，而 steering 每轮常驻 ——
+// 那 335 KB 会一直进 prompt。升级的用户不会重跑旧版卸载，所以这里按老路径也清一遍，
+// 否则新旧两份并存，开销问题原样保留。
+const LEGACY_SKILL_DIRS = ['.kiro/steering'];
 const BOOTSTRAP_CLEAN_SECTION = [
   'CLAUDE.md',
   'GEMINI.md',
@@ -946,6 +1026,22 @@ function uninstall(isGlobal) {
       .filter(e => e.isDirectory())
       .map(e => e.name)
   );
+
+  // 旧布局清理：见 LEGACY_SKILL_DIRS 的说明。老用户跑新版卸载也应清干净。
+  if (!isGlobal) {
+    for (const rel of LEGACY_SKILL_DIRS) {
+      const legacyDir = resolve(baseDir, rel);
+      if (!existsSync(legacyDir)) continue;
+      let n = 0;
+      for (const entry of readdirSync(legacyDir, { withFileTypes: true })) {
+        if (entry.isDirectory() && srcSkillNames.has(entry.name)) {
+          rmSync(resolve(legacyDir, entry.name), { recursive: true, force: true });
+          n++;
+        }
+      }
+      if (n > 0) console.log(`  ✅ 清理旧布局: 移除 ${n} 个 skills <- ${legacyDir}`);
+    }
+  }
 
   const pool = isGlobal ? GLOBAL_TARGETS : TARGETS;
   let totalSkills = 0;

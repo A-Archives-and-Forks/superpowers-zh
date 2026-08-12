@@ -137,7 +137,7 @@ AI：在開始實作之前，我需要了解幾個關鍵問題：
 | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | CLI | `npx superpowers-zh --global --tool hermes` | `~/.hermes/skills/` |
 | [Cursor](https://cursor.sh) | IDE | `npx superpowers-zh` | `.cursor/skills/` |
 | [Windsurf](https://codeium.com/windsurf) | IDE | `npx superpowers-zh` | `.windsurf/skills/` |
-| [Kiro](https://kiro.dev) | IDE | `npx superpowers-zh` | `.kiro/steering/` |
+| [Kiro](https://kiro.dev) | IDE | `npx superpowers-zh` | `.kiro/skills/` |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | CLI | `npx superpowers-zh` | `.gemini/skills/` |
 | [Codex CLI](https://github.com/openai/codex) | CLI | `npx superpowers-zh` | `.codex/skills/` |
 | [Aider](https://aider.chat) | CLI | `npx superpowers-zh` | `.aider/skills/` |
@@ -271,7 +271,7 @@ cp -r superpowers-zh/skills /your/project/.claude/skills      # Claude Code / Co
 cp -r superpowers-zh/skills /your/project/.hermes/skills      # Hermes Agent
 cp -r superpowers-zh/skills /your/project/.cursor/skills      # Cursor
 cp -r superpowers-zh/skills /your/project/.codex/skills       # Codex CLI
-cp -r superpowers-zh/skills /your/project/.kiro/steering      # Kiro
+cp -r superpowers-zh/skills /your/project/.kiro/skills        # Kiro
 cp -r superpowers-zh/skills /your/project/skills/custom       # DeerFlow 2.0
 cp -r superpowers-zh/skills /your/project/.trae/rules         # Trae
 cp -r superpowers-zh/skills /your/project/.agents        # Antigravity
@@ -295,7 +295,7 @@ cp -r superpowers-zh/skills /your/project/.qoder/skills      # Qoder（阿里 AI
 | Claude Code | `CLAUDE.md` | 專案根目錄 |
 | Copilot CLI | `CLAUDE.md` | 與 Claude Code 共用外掛格式 |
 | Hermes Agent | `HERMES.md` 或 `.hermes.md` | 專案根目錄，安裝時自動產生 |
-| Kiro | `.kiro/steering/*.md` | 支援 always/globs/手動三種模式 |
+| Kiro | `.kiro/steering/superpowers-zh.md`（索引，`inclusion: always`）+ `.kiro/skills/` | steering 每輪常駐，故只放索引 |
 | DeerFlow 2.0 | `skills/custom/*/SKILL.md` | 位元組跳動開源 SuperAgent，自動發現自訂 skills |
 | Trae | `.trae/rules/project_rules.md` | 專案級規則 |
 | Antigravity | `GEMINI.md` 或 `AGENTS.md` | 專案根目錄 |
