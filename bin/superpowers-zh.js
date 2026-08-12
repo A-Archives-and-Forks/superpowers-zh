@@ -71,7 +71,14 @@ const TARGETS = [
   // Gemini 无 global：其全局加载是「扩展目录」~/.gemini/extensions/*/skills/ + gemini-extension.json，
   // 不是简单复制到 ~/.gemini/skills，通用 --global 覆盖不了。见 docs/README.gemini-cli.md。
   { name: 'Gemini CLI',    dir: '.gemini/skills',            detect: 'GEMINI.md' },
-  { name: 'Aider',         dir: '.aider/skills',             detect: '.aider' },
+  // Aider 两点都跟直觉相反，都是实测确认的：
+  // 1) Aider 不创建 `.aider/` 目录，它在项目根留下的是 `.aider.` 前缀的产物
+  //    （.aider.conf.yml / .aider.chat.history.md / .aider.tags.cache.v3/）。
+  //    原来 detect 写 '.aider' 永远匹配不上 —— 真实 Aider 项目从来没被自动检测到过。
+  // 2) CONVENTIONS.md **不会**被 Aider 自动加载。官方文档（aider.chat/docs/usage/
+  //    conventions.html）明确要 `aider --read CONVENTIONS.md` 或在 .aider.conf.yml
+  //    写 `read: CONVENTIONS.md`。所以装完必须打印激活方式，否则又是「装了不生效」。
+  { name: 'Aider',         dir: '.aider/skills',             detect: ['.aider.conf.yml', '.aider.chat.history.md', '.aider.tags.cache.v3', '.aider'] },
   { name: 'OpenCode',      dir: '.opencode/skills',          detect: '.opencode',                      global: { dir: '.config/opencode/skills', detect: '.config/opencode' } },
   { name: 'Qwen Code',     dir: '.qwen/skills',             detect: '.qwen',                           global: { dir: '.qwen/skills',           detect: '.qwen' } },
   // Hermes 官方文档：只自动加载 ~/.hermes/skills/（"the primary directory and
@@ -373,7 +380,8 @@ ${skillList}
 当任务匹配某个 skill 时，读取对应的 \`.aider/skills/<skill-name>/SKILL.md\` 并严格遵循其流程。
 `;
 
-  // 写入 CONVENTIONS.md（Aider 原生支持自动加载此文件）
+  // 写入 CONVENTIONS.md。注意：Aider **不会**自动加载这个文件（见 TARGETS 里的
+  // Aider 注释），所以写完必须告诉用户怎么激活，否则装了等于没装。
   // 如果已有 CONVENTIONS.md，追加而不覆盖
   const convPath = resolve(projectDir, 'CONVENTIONS.md');
   if (existsSync(convPath)) {
@@ -388,6 +396,18 @@ ${skillList}
     writeFileSync(convPath, wrapWithSentinel(content), 'utf8');
     console.log(`  ✅ Aider: bootstrap -> ${convPath}`);
   }
+
+  // 激活提示。不替用户改 .aider.conf.yml —— 那是他们的配置文件。
+  console.log('');
+  console.log('  ⚠️  Aider 不会自动加载 CONVENTIONS.md，还需一步才生效：');
+  console.log('');
+  console.log('     每次启动时带上：');
+  console.log('        aider --read CONVENTIONS.md');
+  console.log('');
+  console.log('     或写进 .aider.conf.yml 一劳永逸：');
+  console.log('');
+  console.log('        read: CONVENTIONS.md');
+  console.log('');
 }
 
 function generateGeminiBootstrap(baseDir, isGlobal) {

@@ -81,6 +81,9 @@ declare -a DETECT=(
   ".claude:Claude Code"      ".cursor:Cursor"        ".codex:Codex CLI"
   ".kiro:Kiro"               ".trae:Trae"            ".agents:Antigravity"
   ".openclaw:OpenClaw"       ".windsurf:Windsurf"    ".aider:Aider"
+  # Aider 的真实标记：它不创建 .aider/ 目录，留下的是 .aider. 前缀的产物。
+  # 只测 ".aider" 等于拿代码测代码 —— 真实 Aider 项目一个都匹配不上。
+  ".aider.conf.yml:Aider"    ".aider.chat.history.md:Aider"  ".aider.tags.cache.v3:Aider"
   ".opencode:OpenCode"       ".qwen:Qwen Code"       ".hermes:Hermes Agent"
   ".claw:Claw Code"          ".qoder:Qoder"          ".codebuddy:CodeBuddy"
   ".codeartsdoer:CodeArts"   ".clinerules:Cline"     ".kilocode:Kilo Code"
@@ -92,7 +95,9 @@ for entry in "${DETECT[@]}"; do
   marker="${entry%%:*}"; want="${entry#*:}"
   T=$(mktemp -d); cd "$T"
   case "$marker" in
-    *.md|*.json) mkdir -p "$(dirname "$marker")" 2>/dev/null; : > "$marker" ;;
+    # .yml 也要按「文件」建 —— .aider.conf.yml 是文件不是目录。existsSync 两者都
+    # 匹配得上，但用目录冒充文件等于测了个假场景，下次改检测逻辑就发现不了问题。
+    *.md|*.json|*.yml) mkdir -p "$(dirname "$marker")" 2>/dev/null; : > "$marker" ;;
     *)           mkdir -p "$marker" ;;
   esac
   got=$(node "$INS" 2>&1 | grep -oE '✅ [A-Za-z][A-Za-z ]*(\[|:)' | sed 's/✅ //; s/ *[:[]$//' | sort -u | tr '\n' ',' | sed 's/,$//')
