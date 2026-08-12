@@ -116,11 +116,32 @@ echo ""
 echo "─── C. --global：10 款应成功，其余应明确拒绝且退出码 1 ───"
 declare -a GLOBAL_OK=(claude codex openclaw windsurf opencode qwen qoder crush hermes codebuddy)
 declare -a GLOBAL_NO=(cursor kiro trae aider deerflow vscode claw gemini antigravity codearts cline kilocode)
-for tool in "${GLOBAL_OK[@]}"; do
+# 全局落盘位置断言。原来这里只看退出码 —— 而 Windsurf 的 --global 曾装到
+# ~/.windsurf/skills，官方实际读 ~/.codeium/windsurf/skills，退出码照样是 0。
+# 「跑通了」不等于「装对了」，必须断言 skill 真的落在官方读的那个目录。
+declare -a GLOBAL_DIR=(
+  "claude:.claude/skills"        "codex:.agents/skills"        "openclaw:.openclaw/skills"
+  "windsurf:.codeium/windsurf/skills"                          "opencode:.config/opencode/skills"
+  "qwen:.qwen/skills"            "qoder:.qoder/skills"         "crush:.config/crush/skills"
+  "hermes:.hermes/skills"        "codebuddy:.codebuddy/skills"
+)
+for entry in "${GLOBAL_DIR[@]}"; do
+  tool="${entry%%:*}"; gdir="${entry#*:}"
   H=$(mktemp -d)
-  if HOME="$H" node "$INS" --global --tool "$tool" >/dev/null 2>&1; then ok; else bad "--global $tool 应成功但失败"; fi
+  if HOME="$H" node "$INS" --global --tool "$tool" >/dev/null 2>&1; then
+    n=$(ls -d "$H/$gdir"/*/ 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$n" = "$EXPECT_SKILLS" ]; then ok; else
+      bad "--global ${tool}: ${gdir} 里是 ${n} 个 skill，期望 ${EXPECT_SKILLS} —— 装到别处了？"
+    fi
+  else
+    bad "--global ${tool} 应成功但失败"
+  fi
   rm -rf "$H"
 done
+# 自检：GLOBAL_DIR 必须覆盖 GLOBAL_OK 全部，新增全局工具时不能漏断言落盘位置
+if [ "${#GLOBAL_DIR[@]}" = "${#GLOBAL_OK[@]}" ]; then ok; else
+  bad "GLOBAL_DIR(${#GLOBAL_DIR[@]}) 与 GLOBAL_OK(${#GLOBAL_OK[@]}) 数量不一致 —— 有全局工具没断言落盘位置"
+fi
 for tool in "${GLOBAL_NO[@]}"; do
   H=$(mktemp -d)
   out=$(HOME="$H" node "$INS" --global --tool "$tool" 2>&1); rc=$?
@@ -247,7 +268,9 @@ if curl -sS -o /dev/null --max-time 5 https://github.com 2>/dev/null; then
   [ "$dead" = "0" ] && ok || true
   rm -f "$LINKTMP"
 else
+  # 跳过时也计一次 ok，否则 PASS 总数会随网络状况漂移，发版记录里对不上
   echo "  (无网络，跳过外链验活)"
+  ok
 fi
 
 echo ""

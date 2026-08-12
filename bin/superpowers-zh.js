@@ -55,6 +55,8 @@ const LEGACY_AGENT_FILENAMES = ['code-reviewer.md'];
 // 或存在于应用内设置，没有稳定的用户级 skills 加载路径 —— --global 会明确拒绝而非写无效路径。
 const TARGETS = [
   { name: 'Claude Code',   dir: '.claude/skills',           detect: '.claude',                        global: { dir: '.claude/skills',         detect: '.claude',         boot: '.claude/CLAUDE.md' } },
+  // Cursor 经官方文档核实（cursor.com/docs/skills）：.cursor/skills/<name>/SKILL.md，
+  // 启动时自动发现并交给 Agent 按上下文选用，也可在对话里打 / 手动点名。无需配置。
   { name: 'Cursor',        dir: '.cursor/skills',           detect: ['.cursor', '.cursorrules'] },
   // Codex 全局：docs 确认 Codex 启动时扫描 ~/.agents/skills/（不是 ~/.codex/skills），
   // 直接把每个 skill 复制到 ~/.agents/skills/<skill>/ 正好命中它的扁平扫描。
@@ -82,7 +84,13 @@ const TARGETS = [
   { name: 'Antigravity',   dir: '.agents/skills',            detect: '.agents' },
   { name: 'VS Code',       dir: '.github/superpowers',       detect: '.github/copilot-instructions.md' },
   { name: 'OpenClaw',      dir: 'skills',                     detect: '.openclaw',                     global: { dir: '.openclaw/skills',       detect: '.openclaw' } },
-  { name: 'Windsurf',      dir: '.windsurf/skills',          detect: '.windsurf',                      global: { dir: '.windsurf/skills',       detect: '.windsurf' } },
+  // Windsurf 全局路径与项目级**不同构**，这点反直觉：官方文档（docs.windsurf.com
+  // /windsurf/cascade/skills，现 307 跳 docs.devin.ai/desktop/cascade/skills）写明
+  //   项目级：.windsurf/skills/<skill-name>/
+  //   用户级：~/.codeium/windsurf/skills/<skill-name>/   ← 不是 ~/.windsurf/skills
+  // v1.7.10 及更早 --global 装到 ~/.windsurf/skills —— Windsurf 不读那里，装了不生效。
+  // 它还会扫 .agents/skills 与 ~/.agents/skills；开了读取 CC 配置时也扫 .claude/skills。
+  { name: 'Windsurf',      dir: '.windsurf/skills',          detect: '.windsurf',                      global: { dir: '.codeium/windsurf/skills', detect: '.codeium' } },
   // Gemini 无 global：其全局加载是「扩展目录」~/.gemini/extensions/*/skills/ + gemini-extension.json，
   // 不是简单复制到 ~/.gemini/skills，通用 --global 覆盖不了。见 docs/README.gemini-cli.md。
   { name: 'Gemini CLI',    dir: '.gemini/skills',            detect: 'GEMINI.md' },
