@@ -82,7 +82,17 @@ const TARGETS = [
   // Antigravity 无 global：其全局 skills 加载路径未在 docs 证实（全局规则走 ~/.gemini/GEMINI.md），
   // 不确认能生效就不写，避免「装了不生效」。用户用项目级安装。
   { name: 'Antigravity',   dir: '.agents/skills',            detect: '.agents' },
-  { name: 'VS Code',       dir: '.github/superpowers',       detect: '.github/copilot-instructions.md' },
+  // VS Code Copilot **不认识** .github/superpowers/ —— 官方（code.visualstudio.com
+  // /docs/copilot/customization/custom-instructions）只自动读这几处：
+  //   .github/copilot-instructions.md、AGENTS.md、CLAUDE.md（always-on）
+  //   .github/instructions/*.instructions.md（按 frontmatter 的 applyTo 匹配）
+  // v1.7.10 及更早只把 skills 拷进 .github/superpowers/ 且**不写任何引导** ——
+  // 20 个文件 Copilot 一个都不会读，纯死重。旧文档甚至写着「建议你自己创建
+  // copilot-instructions.md 引用它们」，等于知道需要却不做。
+  // 现在写 .github/instructions/superpowers-zh.instructions.md（applyTo: "**" 即
+  // 全局生效）—— 用我们自己的文件而不是去改用户的 copilot-instructions.md。
+  // 检测标记同时认 .github/instructions（用了 instructions 机制的项目都有）。
+  { name: 'VS Code',       dir: '.github/superpowers',       detect: ['.github/copilot-instructions.md', '.github/instructions'] },
   { name: 'OpenClaw',      dir: 'skills',                     detect: '.openclaw',                     global: { dir: '.openclaw/skills',       detect: '.openclaw' } },
   // Windsurf 全局路径与项目级**不同构**，这点反直觉：官方文档（docs.windsurf.com
   // /windsurf/cascade/skills，现 307 跳 docs.devin.ai/desktop/cascade/skills）写明
@@ -102,6 +112,10 @@ const TARGETS = [
   //    conventions.html）明确要 `aider --read CONVENTIONS.md` 或在 .aider.conf.yml
   //    写 `read: CONVENTIONS.md`。所以装完必须打印激活方式，否则又是「装了不生效」。
   { name: 'Aider',         dir: '.aider/skills',             detect: ['.aider.conf.yml', '.aider.chat.history.md', '.aider.tags.cache.v3', '.aider'] },
+  // OpenCode 经官方文档核实（opencode.ai/docs/skills）：项目 .opencode/skills/<name>/SKILL.md、
+  // 全局 ~/.config/opencode/skills/<name>/SKILL.md，自动发现（项目级会从 cwd 向上走到
+  // git worktree 根）。它同时扫 .claude/skills 与 .agents/skills —— 装过 CC 或
+  // Antigravity 的项目它已经能读到，别重复装。
   { name: 'OpenCode',      dir: '.opencode/skills',          detect: '.opencode',                      global: { dir: '.config/opencode/skills', detect: '.config/opencode' } },
   // Qwen Code = QwenLM/qwen-code 这个 CLI（Gemini CLI 的 fork），**不是**通义灵码
   // （通义灵码是阿里的 IDE 插件，另一个产品，路径完全不同）。旧文档写混过。
@@ -607,6 +621,55 @@ ${skillList}
 
 // Claw Code：根指令文件是 CLAW.md（优先级 CLAUDE.md > CLAW.md > AGENTS.md，
 // 见 ultraworkers/claw-code 的 USAGE.md）。v1.7.10 及更早只装 skills、不写 bootstrap。
+// VS Code Copilot：写 .github/instructions/superpowers-zh.instructions.md。
+// applyTo: "**" 表示对所有请求生效（省略该字段则只能手动挂载，等于白写）。
+// 刻意不动用户的 .github/copilot-instructions.md —— 那是他们的文件。
+function generateVSCodeBootstrap(projectDir) {
+  const instrDir = resolve(projectDir, '.github', 'instructions');
+  mkdirSync(instrDir, { recursive: true });
+
+  const skillEntries = scanSkillEntries(SKILLS_SRC);
+  const skillTable = skillEntries.map(s => `| ${s.name} | ${s.desc} |`).join('\n');
+
+  const rule = `---
+applyTo: "**"
+name: Superpowers-ZH
+description: superpowers-zh 技能框架的索引与触发规则
+---
+
+# Superpowers-ZH 中文增强版
+
+本项目已安装 superpowers-zh 技能框架（${skillEntries.length} 个 skills）。
+
+## 核心规则
+
+1. **收到任务时，先检查是否有匹配的 skill** — 哪怕只有 1% 的可能性也要检查
+2. **设计先于编码** — 收到功能需求时，先用 brainstorming skill 做需求分析
+3. **测试先于实现** — 写代码前先写测试（TDD）
+4. **验证先于完成** — 声称完成前必须运行验证命令
+
+## 可用 Skills
+
+Skills 位于 \`.github/superpowers/\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
+
+| Skill | 触发条件 |
+|-------|---------|
+${skillTable}
+
+## 如何使用
+
+当任务匹配某个 skill 的触发条件时，读取对应的
+\`.github/superpowers/<skill-name>/SKILL.md\` 并严格遵循其流程。
+
+**不要**把 skill 正文复制到本文件 —— 本文件对每个请求都生效，按需读取才能把
+常驻开销控制在这张索引表。
+`;
+
+  const rulePath = resolve(instrDir, 'superpowers-zh.instructions.md');
+  writeFileSync(rulePath, rule, 'utf8');
+  console.log(`  ✅ VS Code: instructions -> ${rulePath}`);
+}
+
 function generateClawBootstrap(projectDir) {
   const skillEntries = scanSkillEntries(SKILLS_SRC);
   const skillList = skillEntries.map(s => `- **${s.name}**: ${s.desc}`).join('\n');
@@ -995,6 +1058,10 @@ function installForTarget(target, baseDir, isGlobal) {
     generateQwenBootstrap(baseDir, isGlobal);
   }
 
+  if (target.name === 'VS Code') {
+    generateVSCodeBootstrap(baseDir);
+  }
+
   if (target.name === 'Claw Code') {
     generateClawBootstrap(baseDir);
   }
@@ -1034,6 +1101,7 @@ function isHomeDir(p) {
 
 // 卸载支持：完整删除的 bootstrap 文件、需要清理段落的 bootstrap 文件
 const BOOTSTRAP_DELETE = [
+  '.github/instructions/superpowers-zh.instructions.md',
   '.trae/rules/superpowers-zh.md',
   '.qoder/rules/superpowers-zh.md',
   '.agents/rules.md',

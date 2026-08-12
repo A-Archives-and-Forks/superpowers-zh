@@ -177,6 +177,17 @@ rows=$(grep -cE '^\| [a-z][a-z0-9-]+ \|' "$R")
 grep -q '\.kilocode/skills/' "$R" && ok || bad "Kilo 索引未指向 .kilocode/skills/"
 cd /; rm -rf "$T"
 
+# VS Code：Copilot 不认识 .github/superpowers/，必须靠 instructions 文件引导。
+# applyTo 缺失的话该文件只能手动挂载 = 白写，所以这条要硬断言。
+T=$(mktemp -d); cd "$T"; node "$INS" --tool vscode >/dev/null 2>&1
+R="$T/.github/instructions/superpowers-zh.instructions.md"
+[ -f "$R" ] && ok || bad "VS Code instructions 文件未生成 —— skills 会成为 Copilot 读不到的死重"
+grep -q '^applyTo: "\*\*"' "$R" && ok || bad "VS Code instructions 缺 applyTo: \"**\"（不写就只能手动挂载）"
+rows=$(grep -cE '^\| [a-z][a-z0-9-]+ \|' "$R")
+[ "$rows" = "$EXPECT_SKILLS" ] && ok || bad "VS Code 索引表 $rows 行，期望 $EXPECT_SKILLS"
+grep -q '\.github/superpowers/' "$R" && ok || bad "VS Code 索引未指向 .github/superpowers/"
+cd /; rm -rf "$T"
+
 T=$(mktemp -d); cd "$T"; node "$INS" --tool kiro >/dev/null 2>&1
 R="$T/.kiro/steering/superpowers-zh.md"
 [ -f "$R" ] && ok || bad "Kiro steering 索引未生成"
