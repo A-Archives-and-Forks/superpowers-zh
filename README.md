@@ -143,7 +143,7 @@ AI：在开始实现之前，我需要了解几个关键问题：
 | [Windsurf](https://windsurf.com) | IDE | `npx superpowers-zh` | `.windsurf/skills/`（全局 `~/.codeium/windsurf/skills/`） |
 | [Kiro](https://kiro.dev) | IDE | `npx superpowers-zh` | `.kiro/skills/` |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | CLI | `npx superpowers-zh` | `.gemini/skills/` |
-| [Codex CLI](https://github.com/openai/codex) | CLI | `npx superpowers-zh` | `.codex/skills/` |
+| [Codex CLI](https://github.com/openai/codex) | CLI | `npx superpowers-zh` | `.agents/skills/` |
 | [Aider](https://aider.chat) | CLI | `npx superpowers-zh` | `.aider/skills/` |
 | [Trae](https://trae.ai) | IDE | `npx superpowers-zh` | `.trae/skills/` + `.trae/rules/` |
 | [VS Code](https://code.visualstudio.com) (Copilot) | IDE 插件 | `npx superpowers-zh` | `.github/superpowers/` + `.github/instructions/` |

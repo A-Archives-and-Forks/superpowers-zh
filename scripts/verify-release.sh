@@ -27,7 +27,7 @@ bad()  { FAIL=$((FAIL+1)); FAILURES+=("$1"); printf '  ❌ %s\n' "$1"; }
 
 # 工具别名 -> 期望的 skills 目录（相对项目根）
 declare -a SPEC=(
-  "claude:.claude/skills"          "cursor:.cursor/skills"        "codex:.codex/skills"
+  "claude:.claude/skills"          "cursor:.cursor/skills"        "codex:.agents/skills"
   "kiro:.kiro/skills"                  "deerflow:skills/custom"       "trae:.trae/skills"
   "antigravity:.agents/skills"     "vscode:.github/superpowers"   "openclaw:skills"
   "windsurf:.windsurf/skills"      "gemini:.gemini/skills"        "aider:.aider/skills"
@@ -113,9 +113,9 @@ for entry in "${DETECT[@]}"; do
 done
 
 echo ""
-echo "─── C. --global：10 款应成功，其余应明确拒绝且退出码 1 ───"
-declare -a GLOBAL_OK=(claude codex openclaw windsurf opencode qwen qoder crush hermes codebuddy)
-declare -a GLOBAL_NO=(cursor kiro trae aider deerflow vscode claw gemini antigravity codearts cline kilocode)
+echo "─── C. --global：11 款应成功，其余应明确拒绝且退出码 1 ───"
+declare -a GLOBAL_OK=(claude codex openclaw windsurf opencode qwen qoder crush hermes codebuddy codearts)
+declare -a GLOBAL_NO=(cursor kiro trae aider deerflow vscode claw gemini antigravity cline kilocode)
 # 全局落盘位置断言。原来这里只看退出码 —— 而 Windsurf 的 --global 曾装到
 # ~/.windsurf/skills，官方实际读 ~/.codeium/windsurf/skills，退出码照样是 0。
 # 「跑通了」不等于「装对了」，必须断言 skill 真的落在官方读的那个目录。
@@ -124,6 +124,7 @@ declare -a GLOBAL_DIR=(
   "windsurf:.codeium/windsurf/skills"                          "opencode:.config/opencode/skills"
   "qwen:.qwen/skills"            "qoder:.qoder/skills"         "crush:.config/crush/skills"
   "hermes:.hermes/skills"        "codebuddy:.codebuddy/skills"
+  "codearts:.codeartsdoer/skills"
 )
 for entry in "${GLOBAL_DIR[@]}"; do
   tool="${entry%%:*}"; gdir="${entry#*:}"
