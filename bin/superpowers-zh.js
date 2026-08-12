@@ -68,7 +68,14 @@ const TARGETS = [
   // 注意 Kiro 的 frontmatter 键是 inclusion / fileMatchPattern，不是 Cursor 系的
   // alwaysApply / globs —— 我们旧文档写错过，见 docs/README.kiro.md。
   { name: 'Kiro',          dir: '.kiro/skills',              detect: '.kiro' },
-  { name: 'DeerFlow',      dir: 'skills/custom',             detect: 'deer_flow' },
+  // DeerFlow 安装路径 skills/custom/ 经官方文档核实（bytedance-deer-flow.mintlify.app
+  // /concepts/skills）：自动扫描 ["skills/public", "skills/custom"] 两个固定目录，
+  // custom 默认被 gitignore，无需任何配置。容器内挂到 /mnt/skills/。
+  // 但检测标记原来写的是 deer_flow —— DeerFlow 2.0 顶层是 backend/frontend/skills/…，
+  // **没有 deer_flow 这个目录**（实测 GitHub API 列目录确认），所以真实的 DeerFlow
+  // 检出从来没被自动检测到过。改认 skills/public：它是 skills 机制本身、随仓库版本
+  // 控制，任何 DeerFlow 检出都有；deer_flow 保留作 1.x 兼容。
+  { name: 'DeerFlow',      dir: 'skills/custom',             detect: ['skills/public', 'deer_flow'] },
   { name: 'Trae',          dir: '.trae/skills',              detect: '.trae' },
   // Antigravity 无 global：其全局 skills 加载路径未在 docs 证实（全局规则走 ~/.gemini/GEMINI.md），
   // 不确认能生效就不写，避免「装了不生效」。用户用项目级安装。

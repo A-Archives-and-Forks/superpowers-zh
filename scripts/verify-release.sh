@@ -88,7 +88,10 @@ declare -a DETECT=(
   ".claw:Claw Code"          ".qoder:Qoder"          ".codebuddy:CodeBuddy"
   ".codeartsdoer:CodeArts"   ".clinerules:Cline"     ".kilocode:Kilo Code"
   ".kilo:Kilo Code"          ".crush:Crush"
-  "deer_flow:DeerFlow"       ".github/copilot-instructions.md:VS Code"
+  # DeerFlow 2.0 顶层没有 deer_flow 目录（backend/frontend/skills/…），只测它等于
+  # 拿代码测代码。skills/public 是 skills 机制本身、随仓库版本控制，才是真实标记。
+  "skills/public:DeerFlow"   "deer_flow:DeerFlow"
+  ".github/copilot-instructions.md:VS Code"
   "GEMINI.md:Gemini CLI"
 )
 for entry in "${DETECT[@]}"; do
