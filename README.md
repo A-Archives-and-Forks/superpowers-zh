@@ -16,7 +16,11 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 >
 > 🌍 Also available in [English](https://aiolaola.com/en?utm_source=github&utm_campaign=superpowers) · [日本語](https://aiolaola.com/ja?utm_source=github&utm_campaign=superpowers) · [Español](https://aiolaola.com/es?utm_source=github&utm_campaign=superpowers) · [한국어](https://aiolaola.com/ko?utm_source=github&utm_campaign=superpowers) · [繁體中文](https://aiolaola.com/zh-Hant?utm_source=github&utm_campaign=superpowers)
 
-> 🆕 **v1.7.9 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.10 更新亮点**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🐛 **Aider 用户请重装** —— 两个错叠一起等于完全不可用：真实 Aider 项目从来没被自动检测到过（它不创建 `.aider/` 目录），且 `CONVENTIONS.md` **不会**被自动加载（官方要求 `--read`）。现在检测认真实标记，装完打印激活命令
+> - 🐛 **Kiro 用户请重装** —— `.kiro/steering/` 下的文件**每轮对话全量进上下文**，而我们把 20 个 skill 正文全塞了进去：实测 **335 KB/轮**。改为索引式后 **4.4 KB**（76 倍），重装会自动清旧布局
+> - 🐛 **Qoder 工具映射表有错** —— `Explore`/`Plan` 的 agent 名是编的（官方就是同名），且表没标适用范围（只覆盖 Qoder CLI，IDE 不同）（[#119](https://github.com/jnMetaCode/superpowers-zh/issues/119)）
+> - 🛡️ **堵上「拿代码测代码」的测试盲区** —— Aider 那个 bug 能在 90 项全绿下活着，是因为测试 `mkdir .aider` 再断言认出 Aider。已补真实标记 + Kiro 两条硬回归守卫（90 → 101 pass）
 > - 🐛 **Hermes 用户请重装** —— 之前我们只装项目级 `.hermes/skills/`，而 Hermes 根本不读那个目录，等于**装了完全不生效**。现在改用 `npx superpowers-zh --global --tool hermes` 装到 `~/.hermes/skills/`（[#45](https://github.com/jnMetaCode/superpowers-zh/issues/45)）
 > - 🔍 **定位核查** —— 逐层比对上游，修掉 5 处「不是增量」的偏离；新增 audit 检查强制 fork 增量必须显式声明
 > - 🆕 **新增 Crush**（工具数 22 → 23）—— 若你已为 CC / Cursor / Codex 装过，Crush 其实已经能读到，别重复装

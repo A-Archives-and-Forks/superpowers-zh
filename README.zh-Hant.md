@@ -16,7 +16,11 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 
 > 📖 **免費配套學習** → [從零學會 AI 編程](https://aiolaola.com/?utm_source=github&utm_campaign=superpowers)：180 節免費實操課 + 《AI 編程實戰三卷書》線上閱讀 + 實戰社群 · superpowers 裝好後配上方法論效率翻倍 · 永久免費
 
-> 🆕 **v1.7.9 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> 🆕 **v1.7.10 更新亮點**（[完整 Release Notes →](RELEASE-NOTES.zh.md)）
+> - 🐛 **Aider 使用者請重裝** —— 兩個錯疊一起等於完全不可用：真實 Aider 專案從來沒被自動偵測到過（它不建立 `.aider/` 目錄），且 `CONVENTIONS.md` **不會**被自動載入（官方要求 `--read`）。現在偵測認真實標記，裝完列印啟用命令
+> - 🐛 **Kiro 使用者請重裝** —— `.kiro/steering/` 下的檔案**每輪對話全量進上下文**，而我們把 20 個 skill 正文全塞了進去：實測 **335 KB/輪**。改為索引式後 **4.4 KB**（76 倍），重裝會自動清舊佈局
+> - 🐛 **Qoder 工具對映表有錯** —— `Explore`/`Plan` 的 agent 名是編的（官方就是同名），且表沒標適用範圍（只涵蓋 Qoder CLI，IDE 不同）（[#119](https://github.com/jnMetaCode/superpowers-zh/issues/119)）
+> - 🛡️ **堵上「拿程式碼測程式碼」的測試盲區** —— Aider 那個 bug 能在 90 項全綠下活著，是因為測試 `mkdir .aider` 再斷言認出 Aider。已補真實標記 + Kiro 兩條硬回歸守衛（90 → 101 pass）
 > - 🐛 **Hermes 使用者請重裝** —— 之前我們只裝專案級 `.hermes/skills/`，而 Hermes 根本不讀那個目錄，等於**裝了完全不生效**。現在改用 `npx superpowers-zh --global --tool hermes` 裝到 `~/.hermes/skills/`（[#45](https://github.com/jnMetaCode/superpowers-zh/issues/45)）
 > - 🔍 **定位核查** —— 逐層比對上游，修掉 5 處「不是增量」的偏離；新增 audit 檢查強制 fork 增量必須顯式聲明
 > - 🆕 **新增 Crush**（工具數 22 → 23）—— 若你已為 CC / Cursor / Codex 裝過，Crush 其實已經能讀到，別重複裝
