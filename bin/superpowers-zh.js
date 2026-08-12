@@ -88,6 +88,9 @@ const TARGETS = [
   //    写 `read: CONVENTIONS.md`。所以装完必须打印激活方式，否则又是「装了不生效」。
   { name: 'Aider',         dir: '.aider/skills',             detect: ['.aider.conf.yml', '.aider.chat.history.md', '.aider.tags.cache.v3', '.aider'] },
   { name: 'OpenCode',      dir: '.opencode/skills',          detect: '.opencode',                      global: { dir: '.config/opencode/skills', detect: '.config/opencode' } },
+  // Qwen Code = QwenLM/qwen-code 这个 CLI（Gemini CLI 的 fork），**不是**通义灵码
+  // （通义灵码是阿里的 IDE 插件，另一个产品，路径完全不同）。旧文档写混过。
+  // 路径经官方文档核实：项目 .qwen/skills/、用户 ~/.qwen/skills/，自动发现无需配置。
   { name: 'Qwen Code',     dir: '.qwen/skills',             detect: '.qwen',                           global: { dir: '.qwen/skills',           detect: '.qwen' } },
   // Hermes 官方文档：只自动加载 ~/.hermes/skills/（"the primary directory and
   // source of truth"），项目级目录不被自动发现，外部目录必须写进
@@ -525,6 +528,57 @@ ${skillList}
   }
 }
 
+// Qwen Code 与 Gemini CLI 同源（前者是后者的 fork），两套机制都对得上：
+//   - skills：官方文档确认自动发现 .qwen/skills/ 与 ~/.qwen/skills/，无需配置
+//     （qwenlm.github.io/qwen-code-docs/en/users/features/skills/）
+//   - bootstrap：分层记忆系统的默认上下文文件就是 QWEN.md，从 cwd 逐层向上到项目根
+//     发现并拼接（可用 contextFileName 改名，默认 QWEN.md）；全局在 ~/.qwen/QWEN.md
+// v1.7.10 及更早只装 skills、不写 bootstrap —— skills 能被发现，但没有引导就不会
+// 在恰当时机自动触发，等于死重。
+function generateQwenBootstrap(baseDir, isGlobal) {
+  const skillEntries = scanSkillEntries(SKILLS_SRC);
+  const skillList = skillEntries.map(s => `- **${s.name}**: ${s.desc}`).join('\n');
+  const scope = isGlobal ? '已全局安装 superpowers-zh 技能框架，所有项目共享' : '本项目已安装 superpowers-zh 技能框架';
+  const skillsRef = isGlobal ? '~/.qwen/skills/' : '.qwen/skills/';
+
+  const content = `# Superpowers-ZH 中文增强版
+
+${scope}（${skillEntries.length} 个 skills）。
+
+## 核心规则
+
+1. **收到任务时，先检查是否有匹配的 skill** — 哪怕只有 1% 的可能性也要检查
+2. **设计先于编码** — 收到功能需求时，先用 brainstorming skill 做需求分析
+3. **测试先于实现** — 写代码前先写测试（TDD）
+4. **验证先于完成** — 声称完成前必须运行验证命令
+
+## 可用 Skills
+
+Skills 位于 \`${skillsRef}\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
+
+${skillList}
+
+## 如何使用
+
+当任务匹配某个 skill 时，读取对应的 \`${skillsRef}<skill-name>/SKILL.md\` 并严格遵循其流程。
+`;
+
+  const qwenPath = isGlobal ? resolve(baseDir, '.qwen', 'QWEN.md') : resolve(baseDir, 'QWEN.md');
+  mkdirSync(dirname(qwenPath), { recursive: true });
+  if (existsSync(qwenPath)) {
+    const existing = readFileSync(qwenPath, 'utf8');
+    if (!existing.includes('superpowers-zh')) {
+      writeFileSync(qwenPath, existing.replace(/\s+$/, '') + '\n\n' + wrapWithSentinel(content), 'utf8');
+      console.log(`  ✅ Qwen Code: 追加 skills 引用 -> ${qwenPath}`);
+    } else {
+      console.log(`  ✅ Qwen Code: QWEN.md 已包含 superpowers-zh 引用`);
+    }
+  } else {
+    writeFileSync(qwenPath, wrapWithSentinel(content), 'utf8');
+    console.log(`  ✅ Qwen Code: bootstrap -> ${qwenPath}`);
+  }
+}
+
 function generateHermesBootstrap(projectDir, isGlobal) {
   // 全局模式不写 bootstrap：Hermes 的用户级指令文件约定未在 docs 证实，
   // 往 $HOME 根目录写 HERMES.md 是猜路径 + 污染主目录。~/.hermes/skills/ 里的
@@ -854,6 +908,10 @@ function installForTarget(target, baseDir, isGlobal) {
     generateGeminiBootstrap(baseDir, isGlobal);
   }
 
+  if (target.name === 'Qwen Code') {
+    generateQwenBootstrap(baseDir, isGlobal);
+  }
+
   if (target.name === 'Hermes Agent') {
     generateHermesBootstrap(baseDir, isGlobal);
   }
@@ -904,6 +962,7 @@ const LEGACY_SKILL_DIRS = ['.kiro/steering'];
 const BOOTSTRAP_CLEAN_SECTION = [
   'CLAUDE.md',
   'GEMINI.md',
+  'QWEN.md',
   'HERMES.md',
   'CONVENTIONS.md',
   'CODEBUDDY.md',
@@ -987,7 +1046,9 @@ function cleanBootstrapSection(filePath) {
 // 仅 Claude Code（~/.claude/CLAUDE.md，全局记忆已证实）和 Qoder（~/.qoder/rules/，镜像其项目机制）
 // 会写全局 bootstrap；其余全局工具靠 skill 自动发现，无 bootstrap 需清理。
 const GLOBAL_BOOTSTRAP_DELETE = ['.qoder/rules/superpowers-zh.md'];
-const GLOBAL_BOOTSTRAP_CLEAN_SECTION = ['.claude/CLAUDE.md'];
+// qwen 在 GLOBAL_OK 里，--global 会写 ~/.qwen/QWEN.md，全局卸载必须清掉它，
+// 否则 --global 装卸一轮会在用户主目录留残留。
+const GLOBAL_BOOTSTRAP_CLEAN_SECTION = ['.claude/CLAUDE.md', '.qwen/QWEN.md'];
 
 function uninstallForTarget(target, srcSkillNames, baseDir, isGlobal) {
   const relDir = isGlobal ? (target.global && target.global.dir) : target.dir;

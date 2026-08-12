@@ -177,6 +177,27 @@ node "$INS" --tool kiro >/dev/null 2>&1
 [ -f "$T/.kiro/steering/my-own.md" ] && ok || bad "Kiro 升级误删了用户自己的 steering 文件"
 cd /; rm -rf "$T"
 
+# Qwen Code：bootstrap 必须写 QWEN.md（官方分层记忆的默认上下文文件），
+# 且项目级/全局装卸都不能留残留。v1.7.10 及更早只装 skills 不写 bootstrap。
+T=$(mktemp -d); cd "$T"
+printf '# 用户自己的上下文\n' > QWEN.md
+node "$INS" --tool qwen >/dev/null 2>&1
+grep -q 'superpowers-zh' QWEN.md && ok || bad "Qwen: QWEN.md 未写入 bootstrap"
+grep -q '用户自己的上下文' QWEN.md && ok || bad "Qwen: 覆盖了用户已有的 QWEN.md"
+grep -q '\.qwen/skills/' QWEN.md && ok || bad "Qwen: bootstrap 未指向 .qwen/skills/"
+node "$INS" --uninstall >/dev/null 2>&1
+grep -q 'superpowers-zh' QWEN.md && bad "Qwen: 卸载后 QWEN.md 仍残留 superpowers-zh 段" || ok
+grep -q '用户自己的上下文' QWEN.md && ok || bad "Qwen: 卸载误删了用户自己的 QWEN.md 内容"
+cd /; rm -rf "$T"
+
+H=$(mktemp -d)
+HOME="$H" node "$INS" --global --tool qwen >/dev/null 2>&1
+[ -f "$H/.qwen/QWEN.md" ] && ok || bad "Qwen --global: 未写 ~/.qwen/QWEN.md"
+HOME="$H" node "$INS" --global --uninstall >/dev/null 2>&1
+left=$(find "$H" -type f 2>/dev/null | wc -l | tr -d ' ')
+[ "$left" = "0" ] && ok || bad "Qwen --global 卸载后 HOME 残留 $left 个文件"
+rm -rf "$H"
+
 echo ""
 echo "─── F. PATH 探测健壮性（issue #48 新代码）───"
 T=$(mktemp -d); cd "$T"
