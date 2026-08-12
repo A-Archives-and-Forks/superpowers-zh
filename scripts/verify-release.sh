@@ -210,6 +210,44 @@ echo "$out" | grep -qi "error\|Traceback\|ENOENT" && bad "PATH 异常时输出�
 cd /; rm -rf "$T"
 
 echo ""
+echo "─── H. 外链验活：docs / README 里引用的官方文档必须真实存在 ───"
+# 起因：docs/README.openclaw.md 长期链着 github.com/anthropics/openclaw —— 那个仓库
+# 根本不存在（真正的是 openclaw/openclaw）；README 还把谷歌的 Antigravity 链成
+# anthropics/antigravity。编造出来的「出处」比没有出处更坏：它让人以为核实过了。
+# 无网络时跳过，不阻塞离线发版。
+# 串行跑 45 条链接（每条最多 12s）会把整个脚本拖到分钟级并撞上超时 —— 第一版就是
+# 这么写的，直接把 verify-release 跑挂了。改成 xargs -P 并行 + 8s 上限，结果写进
+# 临时文件后再回到主 shell 计数（bad 是函数，在子进程里加不上计数）。
+if curl -sS -o /dev/null --max-time 5 https://github.com 2>/dev/null; then
+  LINKTMP=$(mktemp)
+  # 第一遍并行快扫。注意这一遍**会误报** —— 实测 docs.codeium.com 在 8s 上限下
+  # 偶发超时，而它其实活着。一个会误报的门禁比没有门禁更糟：人会学会忽略它。
+  # 所以第一遍只产出「嫌疑名单」，不下结论。
+  grep -rhoE "https://[a-zA-Z0-9./_-]+" "$REPO"/docs/*.md "$REPO"/README.md "$REPO"/README.zh-Hant.md 2>/dev/null \
+    | grep -viE "jnmetacode|aiolaola|user-images|shields\.io|opensource\.org|makeapullrequest|npmjs\.com|compshare|cubence|claude\.ai/code" \
+    | sed 's/[.,)]*$//' | sort -u \
+    | xargs -P 10 -I{} sh -c 'c=$(curl -sS -o /dev/null -w "%{http_code}" -L --max-time 8 "$1" 2>/dev/null); case "$c" in 2*|3*|403) ;; *) echo "$1" ;; esac' _ {} \
+    > "$LINKTMP" 2>/dev/null
+  # 第二遍：只对嫌疑名单串行复核，放宽超时并让 curl 自己重试。两遍都判死才算死。
+  suspects=$(wc -l < "$LINKTMP" | tr -d ' ')
+  dead=0
+  if [ "$suspects" != "0" ]; then
+    while read -r u; do
+      [ -z "$u" ] && continue
+      c=$(curl -sS -o /dev/null -w "%{http_code}" -L --max-time 25 --retry 2 --retry-delay 1 "$u" 2>/dev/null)
+      case "$c" in
+        2*|3*|403) ;;
+        *) bad "死链（${c:-无响应}）: ${u}"; dead=$((dead+1)) ;;
+      esac
+    done < "$LINKTMP"
+  fi
+  [ "$dead" = "0" ] && ok || true
+  rm -f "$LINKTMP"
+else
+  echo "  (无网络，跳过外链验活)"
+fi
+
+echo ""
 echo "─── G. 自检：本脚本的覆盖清单不得落后于 installer ───"
 # 与 audit.sh Category 5 同一口径：TARGETS 条目数 + 1（Copilot CLI 与 CC 共用目标）
 targets=$(sed -n '/^const TARGETS = \[/,/^\];/p' "$INS" | grep -cE "^  \{ name: '")

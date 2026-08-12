@@ -140,7 +140,7 @@ AI：在开始实现之前，我需要了解几个关键问题：
 | [Copilot CLI](https://githubnext.com/projects/copilot-cli) | CLI | `npx superpowers-zh --tool copilot` | `.claude/skills/` |
 | [Hermes Agent](https://github.com/NousResearch/hermes-agent) | CLI | `npx superpowers-zh --global --tool hermes` | `~/.hermes/skills/` |
 | [Cursor](https://cursor.sh) | IDE | `npx superpowers-zh` | `.cursor/skills/` |
-| [Windsurf](https://codeium.com/windsurf) | IDE | `npx superpowers-zh` | `.windsurf/skills/` |
+| [Windsurf](https://windsurf.com) | IDE | `npx superpowers-zh` | `.windsurf/skills/` |
 | [Kiro](https://kiro.dev) | IDE | `npx superpowers-zh` | `.kiro/skills/` |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | CLI | `npx superpowers-zh` | `.gemini/skills/` |
 | [Codex CLI](https://github.com/openai/codex) | CLI | `npx superpowers-zh` | `.codex/skills/` |
@@ -149,13 +149,13 @@ AI：在开始实现之前，我需要了解几个关键问题：
 | [VS Code](https://code.visualstudio.com) (Copilot) | IDE 插件 | `npx superpowers-zh` | `.github/superpowers/` |
 | [DeerFlow 2.0](https://github.com/bytedance/deer-flow) | Agent 框架 | `npx superpowers-zh` | `skills/custom/` |
 | [OpenCode](https://opencode.ai) | CLI | `npx superpowers-zh` | `.opencode/skills/` |
-| [OpenClaw](https://github.com/anthropics/openclaw) | CLI | `npx superpowers-zh` | `skills/` |
+| [OpenClaw](https://github.com/openclaw/openclaw) | CLI | `npx superpowers-zh` | `skills/` |
 | [Qwen Code](https://github.com/QwenLM/qwen-code) | CLI | `npx superpowers-zh` | `.qwen/skills/` + `QWEN.md` |
-| [Antigravity](https://github.com/anthropics/antigravity) | CLI | `npx superpowers-zh` | `.agents/skills/` |
+| [Antigravity](https://antigravity.google) | CLI | `npx superpowers-zh` | `.agents/skills/` |
 | [Claw Code](https://github.com/ultraworkers/claw-code) | CLI (Rust) | `npx superpowers-zh` | `.claw/skills/` |
 | [Qoder](https://qoder.com) (阿里 AI IDE) | IDE | `npx superpowers-zh` | `.qoder/skills/` + `.qoder/rules/` |
 | [CodeBuddy](https://copilot.tencent.com) (腾讯 AI IDE) | IDE | `npx superpowers-zh` | `.codebuddy/skills/` + `CODEBUDDY.md` |
-| [华为云码道 CodeArts](https://www.huaweicloud.com/product/codeartsdoer.html) | IDE | `npx superpowers-zh` | `.codeartsdoer/skills/` |
+| [华为云码道 CodeArts](https://codearts.huaweicloud.com/) | IDE | `npx superpowers-zh` | `.codeartsdoer/skills/` |
 | [Cline](https://cline.bot) | IDE 插件 | `npx superpowers-zh --tool cline` | `.cline/skills/` + `.clinerules/` |
 | [Kilo Code](https://kilo.ai) | IDE 插件 | `npx superpowers-zh --tool kilocode` | `.kilocode/skills/` + `.kilocode/rules/` |
 | [Crush](https://github.com/charmbracelet/crush) | CLI | `npx superpowers-zh` | `.crush/skills/` |
