@@ -219,7 +219,7 @@ npx superpowers-zh --global --tool claude   # 或指定工具
 
 全域安裝把 skills 裝到工具的**使用者級目錄**（如 `~/.claude/skills`），一次安裝所有專案自動可用，更新時也只需重裝一次。**專案級優先、全域兜底**，二者可共存。
 
-支援通用全域安裝的工具（均為 docs 已證實的使用者級載入路徑）：**Claude Code · Codex CLI · Qoder · Windsurf · Qwen Code · OpenClaw · OpenCode · Crush · Hermes Agent**。其中 **Codex CLI** 全域裝到 `~/.agents/skills`（Codex 啟動掃描目錄）。其餘工具（Cursor / Kiro / Trae / Aider / DeerFlow / VS Code / Claw / Cline / Kilo Code）規則是專案級或存於應用內設定，`--global` 會提示改用專案級；**Gemini CLI / Antigravity** 有各自專屬的全域方式（Gemini 走擴充目錄），見對應 `docs/README.*.md`。
+支援通用全域安裝的工具（均為 docs 已證實的使用者級載入路徑）：**Claude Code · Codex CLI · Qoder · Windsurf · Qwen Code · OpenClaw · OpenCode · Crush · Hermes Agent · CodeBuddy**。其中 **Codex CLI** 全域裝到 `~/.agents/skills`（Codex 啟動掃描目錄）。其餘工具（Cursor / Kiro / Trae / Aider / DeerFlow / VS Code / Claw / Cline / Kilo Code / CodeArts）規則是專案級或存於應用內設定，`--global` 會提示改用專案級；**Gemini CLI / Antigravity** 有各自專屬的全域方式（Gemini 走擴充目錄），見對應 `docs/README.*.md`。
 
 | | 專案級（預設） | 全域（`--global`） |
 |---|---|---|
@@ -315,7 +315,7 @@ cp -r superpowers-zh/skills /your/project/.qoder/skills      # Qoder（阿里 AI
 | Claw Code | `.claw/skills/*/SKILL.md` | Rust 版 CLI agent，相容 Claude Code 的 SKILL.md 格式 |
 | Qoder | `.qoder/skills/*/SKILL.md` + `.qoder/rules/superpowers-zh.md` | 阿里 AI IDE，自動產生 `trigger: always_on` 的 bootstrap rule |
 
-> **詳細安裝指南**：[Kiro](docs/README.kiro.md) · [DeerFlow](docs/README.deerflow.md) · [Trae](docs/README.trae.md) · [Antigravity](docs/README.antigravity.md) · [VS Code](docs/README.vscode.md) · [Codex](docs/README.codex.md) · [OpenCode](docs/README.opencode.md) · [OpenClaw](docs/README.openclaw.md) · [Windsurf](docs/README.windsurf.md) · [Gemini CLI](docs/README.gemini-cli.md) · [Aider](docs/README.aider.md) · [Qwen Code](docs/README.qwen.md) · [Hermes Agent](docs/README.hermes.md) · [Qoder](docs/README.qoder.md) · [CodeBuddy](docs/README.codebuddy.md) · [華為雲碼道](docs/README.codearts.md) · [Kimi Code](docs/README.kimi.md) · [Pi](docs/README.pi.md)
+> **詳細安裝指南**：[Kiro](docs/README.kiro.md) · [DeerFlow](docs/README.deerflow.md) · [Trae](docs/README.trae.md) · [Antigravity](docs/README.antigravity.md) · [VS Code](docs/README.vscode.md) · [Codex](docs/README.codex.md) · [OpenCode](docs/README.opencode.md) · [OpenClaw](docs/README.openclaw.md) · [Windsurf](docs/README.windsurf.md) · [Gemini CLI](docs/README.gemini-cli.md) · [Aider](docs/README.aider.md) · [Qwen Code](docs/README.qwen.md) · [Hermes Agent](docs/README.hermes.md) · [Claw Code](docs/README.claw.md) · [Qoder](docs/README.qoder.md) · [CodeBuddy](docs/README.codebuddy.md) · [華為雲碼道](docs/README.codearts.md) · [Kimi Code](docs/README.kimi.md) · [Pi](docs/README.pi.md)
 
 ### 解除安裝 / 誤裝清理（v1.2.1+）
 

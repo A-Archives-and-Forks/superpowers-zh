@@ -113,9 +113,9 @@ for entry in "${DETECT[@]}"; do
 done
 
 echo ""
-echo "─── C. --global：7 款应成功，其余应明确拒绝且退出码 1 ───"
-declare -a GLOBAL_OK=(claude codex openclaw windsurf opencode qwen qoder crush hermes)
-declare -a GLOBAL_NO=(cursor kiro trae aider deerflow vscode claw gemini antigravity codebuddy codearts cline kilocode)
+echo "─── C. --global：10 款应成功，其余应明确拒绝且退出码 1 ───"
+declare -a GLOBAL_OK=(claude codex openclaw windsurf opencode qwen qoder crush hermes codebuddy)
+declare -a GLOBAL_NO=(cursor kiro trae aider deerflow vscode claw gemini antigravity codearts cline kilocode)
 for tool in "${GLOBAL_OK[@]}"; do
   H=$(mktemp -d)
   if HOME="$H" node "$INS" --global --tool "$tool" >/dev/null 2>&1; then ok; else bad "--global $tool 应成功但失败"; fi

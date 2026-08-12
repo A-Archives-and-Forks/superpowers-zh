@@ -104,9 +104,20 @@ const TARGETS = [
   // ~/.hermes/config.yaml 的 skills.external_dirs。所以全局才是能直接生效的装法；
   // 项目级仍保留（便于随仓库分发），但装完会打印需要粘贴的 config.yaml 片段。
   { name: 'Hermes Agent',  dir: '.hermes/skills',            detect: ['.hermes', 'HERMES.md', '.hermes.md'], global: { dir: '.hermes/skills',         detect: '.hermes' } },
+  // Claw Code 两处都有源码级证据（ultraworkers/claw-code）：
+  //   - skills：rust/crates/plugins/src/lib.rs 里明写 "discovers skills from local
+  //     roots such as `.claw/skills`, `.omc/skills`, `.agents/skills` …"
+  //   - 指令文件：USAGE.md 列出根指令文件 CLAUDE.md / CLAW.md / AGENTS.md，
+  //     优先级 CLAUDE.md > CLAW.md > AGENTS.md
+  // 注意 claw 也扫 .agents/skills —— 装过 Antigravity 的项目它已经能读到，别重复装。
   { name: 'Claw Code',     dir: '.claw/skills',              detect: ['.claw', 'CLAW.md'] },
   { name: 'Qoder',         dir: '.qoder/skills',             detect: '.qoder',                         global: { dir: '.qoder/skills',          detect: '.qoder' } },
-  { name: 'CodeBuddy',     dir: '.codebuddy/skills',         detect: ['.codebuddy', 'CODEBUDDY.md'] },
+  // CodeBuddy 官方文档（codebuddy.cn/docs/cli/codebuddy-dir）确认全局与项目级同构：
+  //   skills  ~/.codebuddy/skills/   与  .codebuddy/skills/
+  //   记忆文件 ~/.codebuddy/CODEBUDDY.md 与 项目根 CODEBUDDY.md（两处等价）
+  // 优先级 项目级 > 用户级。v1.7.10 及更早文档写「用户级路径尚未验证」而没有
+  // --global —— 现已核实，补上。
+  { name: 'CodeBuddy',     dir: '.codebuddy/skills',         detect: ['.codebuddy', 'CODEBUDDY.md'], global: { dir: '.codebuddy/skills',      detect: '.codebuddy' } },
   // 华为云码道（CodeArts Doer）：skills 放 .codeartsdoer/skills/（用户在 #20 确认）。
   // 仅 skills-only —— 其 bootstrap/指令文件约定未证实，靠 CodeArts 自身 skill 发现；
   // 若不自动触发需在对话里手动点名 skill（docs 已说明）。
@@ -586,6 +597,59 @@ ${skillList}
   }
 }
 
+// Claw Code：根指令文件是 CLAW.md（优先级 CLAUDE.md > CLAW.md > AGENTS.md，
+// 见 ultraworkers/claw-code 的 USAGE.md）。v1.7.10 及更早只装 skills、不写 bootstrap。
+function generateClawBootstrap(projectDir) {
+  const skillEntries = scanSkillEntries(SKILLS_SRC);
+  const skillList = skillEntries.map(s => `- **${s.name}**: ${s.desc}`).join('\n');
+  const scope = isGlobal ? '已全局安装 superpowers-zh 技能框架，所有项目共享' : '本项目已安装 superpowers-zh 技能框架';
+  const skillsRef = isGlobal ? '~/.codebuddy/skills/' : '.codebuddy/skills/';
+
+  const content = `# Superpowers-ZH 中文增强版
+
+${scope}（${skillEntries.length} 个 skills）。
+
+## 核心规则
+
+1. **收到任务时，先检查是否有匹配的 skill** — 哪怕只有 1% 的可能性也要检查
+2. **设计先于编码** — 收到功能需求时，先用 brainstorming skill 做需求分析
+3. **测试先于实现** — 写代码前先写测试（TDD）
+4. **验证先于完成** — 声称完成前必须运行验证命令
+
+## 可用 Skills
+
+Skills 位于 \`.claw/skills/\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
+
+${skillList}
+
+## 如何使用
+
+当任务匹配某个 skill 时，读取对应的 \`.claw/skills/<skill-name>/SKILL.md\` 并严格遵循其流程。
+`;
+
+  const mdPath = resolve(projectDir, 'CLAW.md');
+  if (existsSync(mdPath)) {
+    const existing = readFileSync(mdPath, 'utf8');
+    if (!existing.includes('superpowers-zh')) {
+      writeFileSync(mdPath, existing.replace(/\s+$/, '') + '\n\n' + wrapWithSentinel(content), 'utf8');
+      console.log(`  ✅ Claw Code: 追加 skills 引用 -> ${mdPath}`);
+    } else {
+      console.log(`  ✅ Claw Code: CLAW.md 已包含 superpowers-zh 引用`);
+    }
+  } else {
+    writeFileSync(mdPath, wrapWithSentinel(content), 'utf8');
+    console.log(`  ✅ Claw Code: bootstrap -> ${mdPath}`);
+  }
+
+  // claw 的根指令文件优先级是 CLAUDE.md > CLAW.md。项目里若已有 CLAUDE.md，
+  // 它可能压过 CLAW.md —— 说清楚，别让人以为装了没生效。
+  if (existsSync(resolve(projectDir, 'CLAUDE.md'))) {
+    console.log('  ℹ️  检测到项目里已有 CLAUDE.md。claw 的根指令文件优先级是');
+    console.log('     CLAUDE.md > CLAW.md > AGENTS.md，CLAUDE.md 可能压过刚写的 CLAW.md。');
+    console.log('     如果 skill 不触发，跑一次 `npx superpowers-zh --tool claude` 让 CLAUDE.md 也带上引导。');
+  }
+}
+
 function generateHermesBootstrap(projectDir, isGlobal) {
   // 全局模式不写 bootstrap：Hermes 的用户级指令文件约定未在 docs 证实，
   // 往 $HOME 根目录写 HERMES.md 是猜路径 + 污染主目录。~/.hermes/skills/ 里的
@@ -719,13 +783,15 @@ ${skillList}
 
 // CodeBuddy（腾讯 AI IDE）—— 加载机制类似 Claude Code：项目根 CODEBUDDY.md 作 bootstrap，
 // skills 放 .codebuddy/skills/。仅项目级（其用户级 skills 加载路径未证实，暂不做全局）。
-function generateCodeBuddyBootstrap(baseDir) {
+function generateCodeBuddyBootstrap(baseDir, isGlobal) {
   const skillEntries = scanSkillEntries(SKILLS_SRC);
   const skillList = skillEntries.map(s => `- **${s.name}**: ${s.desc}`).join('\n');
+  const scope = isGlobal ? '已全局安装 superpowers-zh 技能框架，所有项目共享' : '本项目已安装 superpowers-zh 技能框架';
+  const skillsRef = isGlobal ? '~/.codebuddy/skills/' : '.codebuddy/skills/';
 
   const content = `# Superpowers-ZH 中文增强版
 
-本项目已安装 superpowers-zh 技能框架（${skillEntries.length} 个 skills）。
+${scope}（${skillEntries.length} 个 skills）。
 
 ## 核心规则
 
@@ -736,16 +802,18 @@ function generateCodeBuddyBootstrap(baseDir) {
 
 ## 可用 Skills
 
-Skills 位于 \`.codebuddy/skills/\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
+Skills 位于 \`${skillsRef}\` 目录，每个 skill 有独立的 \`SKILL.md\` 文件。
 
 ${skillList}
 
 ## 如何使用
 
-当任务匹配某个 skill 时，读取对应的 \`.codebuddy/skills/<skill-name>/SKILL.md\` 并严格遵循其流程。
+当任务匹配某个 skill 时，读取对应的 \`${skillsRef}<skill-name>/SKILL.md\` 并严格遵循其流程。
 `;
 
-  const mdPath = resolve(baseDir, 'CODEBUDDY.md');
+  // 全局记忆文件在 ~/.codebuddy/CODEBUDDY.md；项目级放项目根（官方称两处等价）
+  const mdPath = isGlobal ? resolve(baseDir, '.codebuddy', 'CODEBUDDY.md') : resolve(baseDir, 'CODEBUDDY.md');
+  mkdirSync(dirname(mdPath), { recursive: true });
   if (existsSync(mdPath)) {
     const existing = readFileSync(mdPath, 'utf8');
     if (!existing.includes('superpowers-zh')) {
@@ -919,6 +987,10 @@ function installForTarget(target, baseDir, isGlobal) {
     generateQwenBootstrap(baseDir, isGlobal);
   }
 
+  if (target.name === 'Claw Code') {
+    generateClawBootstrap(baseDir);
+  }
+
   if (target.name === 'Hermes Agent') {
     generateHermesBootstrap(baseDir, isGlobal);
   }
@@ -928,7 +1000,7 @@ function installForTarget(target, baseDir, isGlobal) {
   }
 
   if (target.name === 'CodeBuddy') {
-    generateCodeBuddyBootstrap(baseDir);
+    generateCodeBuddyBootstrap(baseDir, isGlobal);
   }
 
   if (target.name === 'Kiro') {
@@ -970,6 +1042,7 @@ const BOOTSTRAP_CLEAN_SECTION = [
   'CLAUDE.md',
   'GEMINI.md',
   'QWEN.md',
+  'CLAW.md',
   'HERMES.md',
   'CONVENTIONS.md',
   'CODEBUDDY.md',
@@ -1055,7 +1128,7 @@ function cleanBootstrapSection(filePath) {
 const GLOBAL_BOOTSTRAP_DELETE = ['.qoder/rules/superpowers-zh.md'];
 // qwen 在 GLOBAL_OK 里，--global 会写 ~/.qwen/QWEN.md，全局卸载必须清掉它，
 // 否则 --global 装卸一轮会在用户主目录留残留。
-const GLOBAL_BOOTSTRAP_CLEAN_SECTION = ['.claude/CLAUDE.md', '.qwen/QWEN.md'];
+const GLOBAL_BOOTSTRAP_CLEAN_SECTION = ['.claude/CLAUDE.md', '.qwen/QWEN.md', '.codebuddy/CODEBUDDY.md'];
 
 function uninstallForTarget(target, srcSkillNames, baseDir, isGlobal) {
   const relDir = isGlobal ? (target.global && target.global.dir) : target.dir;
