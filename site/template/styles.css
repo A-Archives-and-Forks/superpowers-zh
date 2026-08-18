@@ -69,6 +69,7 @@ body::before {
 .nav nav > * { flex: 0 0 auto; white-space: nowrap; }
 .nav nav a { color: var(--text-dim); transition: color .2s; }
 .nav nav a:hover { color: var(--text); }
+.nav nav a.active { color: var(--text); }   /* 当前页：只提亮，不加粗 */
 
 main { position: relative; z-index: 1; }
 section { max-width: var(--maxw); margin: 0 auto; padding: 80px 24px; }

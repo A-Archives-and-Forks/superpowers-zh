@@ -652,7 +652,7 @@ ${extraHead}</head>
     <a href="${base}index.html#skills">${t.nav.skills}</a>
     <a href="${base}index.html#tools">${t.nav.tools}</a>
     <a href="${base}index.html#faq">${t.nav.faq}</a>
-    <a href="${base}sponsors.html">${t.nav.sponsors}</a>
+    <a href="${base}sponsors.html"${pageClean === 'sponsors' ? ' class="active" aria-current="page"' : ''}>${t.nav.sponsors}</a>
     <a href="https://aiolaola.com/?utm_source=sp1" target="_blank" rel="noopener">${t.nav.learn}</a>
     <a href="https://github.com/jnMetaCode/superpowers-zh" target="_blank" rel="noopener">${t.nav.github}</a>
     ${langSwitch}
