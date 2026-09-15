@@ -87,9 +87,9 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 </table>
 <table>
 <tr>
-<td width="25%" align="center">
+<td width="25%">
   <a href="https://www.volcengine.com/activity/ai618?utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=superpowers-zh&utm_content=hw">
-    <img src="assets/sponsors/logo-volcengine-icon.png" alt="字節火山引擎 —— 火山方舟 Agent/Coding Plan 國模套餐首購 9.9 元起" width="96">
+    <img src="assets/sponsors/volcengine.png" alt="字節火山引擎 —— 火山方舟 Agent/Coding Plan 國模套餐首購 9.9 元起" width="100%">
   </a>
 </td>
 <td width="75%" valign="middle">

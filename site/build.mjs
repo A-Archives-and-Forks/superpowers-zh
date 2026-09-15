@@ -330,7 +330,7 @@ const SPONSORS = [
   },
   {
     tier: 'standard',
-    code: '',
+    img: 'volcengine.png', w: 840, h: 200, code: '',
     logo: 'logo-volcengine-icon.png',
     url: 'https://www.volcengine.com/activity/ai618?utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=superpowers-zh&utm_content=hw',
     name: { zh: '字节火山引擎', en: 'Volcano Engine by ByteDance', zht: '字節火山引擎' },
