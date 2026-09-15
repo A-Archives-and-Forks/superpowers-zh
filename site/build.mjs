@@ -328,6 +328,34 @@ const SPONSORS = [
       zht: '按量付費無月費，GPT-Image-2 低至 $0.006/張',
     },
   },
+  {
+    tier: 'standard',
+    code: '',
+    logo: 'logo-volcengine-icon.png',
+    url: 'https://www.volcengine.com/activity/ai618?utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=superpowers-zh&utm_content=hw',
+    name: { zh: '字节火山引擎', en: 'Volcano Engine by ByteDance', zht: '字節火山引擎' },
+    tagline: {
+      zh: '火山方舟 Agent/Coding Plan 国模套餐首购 9.9 元起',
+      en: 'Volcano Ark Agent/Coding Plans for Chinese models from ¥9.9 (first purchase)',
+      zht: '火山方舟 Agent/Coding Plan 國模套餐首購 9.9 元起',
+    },
+    alt: {
+      zh: '字节火山引擎 —— 火山方舟 Agent/Coding Plan 国模套餐首购 9.9 元起',
+      en: 'Volcano Engine by ByteDance — Volcano Ark Agent/Coding Plans for Chinese models from ¥9.9 (first purchase)',
+      zht: '字節火山引擎 —— 火山方舟 Agent/Coding Plan 國模套餐首購 9.9 元起',
+    },
+    desc: {
+      zh: '火山方舟 Agent/Coding Plan 国模套餐首购 9.9 元起，支持 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、豆包等主流模型，统一 API，适配编码与智能体开发。',
+      en: 'Volcano Ark Agent/Coding Plans for Chinese models from ¥9.9 on first purchase, covering GLM-5.3, Kimi-K3, DeepSeek, MiniMax, Doubao and other mainstream models behind one unified API, built for coding and agent development.',
+      zht: '火山方舟 Agent/Coding Plan 國模套餐首購 9.9 元起，支援 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、豆包等主流模型，統一 API，適配編碼與智慧體開發。',
+    },
+    perk: {
+      zh: '🎁 注册即免费领 2500 万 Token，立即前往火山引擎活动页面',
+      en: '🎁 Get 25 million free tokens on sign-up — head to the Volcano Engine campaign page',
+      zht: '🎁 註冊即免費領 2500 萬 Token，立即前往火山引擎活動頁面',
+    },
+    perkShort: { zh: '注册即免费领 2500 万 Token', en: '25M free tokens on sign-up', zht: '註冊即免費領 2500 萬 Token' },
+  },
 ];
 
 // 赞助位是付费展示位，图挂了就是事故。旗舰卡读 img、常规卡读 logo，两条路径
