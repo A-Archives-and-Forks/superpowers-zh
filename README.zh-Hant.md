@@ -52,7 +52,7 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 </td>
 <td width="75%" valign="middle">
 
-感謝 [優雲智算](https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh) 贊助本專案！優雲智算是 UCloud 旗下 AI 雲平台，主打包月、按次的高性價比國模 Agent Plan 方案，支援 GLM-5.2，低至 **49 元/月**起。同時提供官轉穩定海外模型。支援接入 Claude Code、Codex 及 API 呼叫。支援企業高併發、7×24 技術支援、自助開票。🎁 **透過[此連結](https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh)註冊的使用者，可得免費 5 元平台體驗金！**
+感謝 [優雲智算](https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh) 贊助本專案！優雲智算是 UCloud 旗下 AI 雲平台，主打包月、按次的高性價比國模 Agent Plan 方案，支援 GLM-5.2，低至 **49 元/月**起。最新上線 H3 影片生成套餐包，768P 低至 8 分/秒，支援 2K 畫質，最長 30s 影片生成。支援企業高併發、7×24 技術支援、自助開票。🎁 **透過[此連結](https://passport.compshare.cn/register?referral_code=ETD3L5JBM13CtKARkMORot&ytag=GPU_YY_YX_git_superpowers-zh)註冊的使用者，可得免費 5 元平台體驗金！**
 
 </td>
 </tr>

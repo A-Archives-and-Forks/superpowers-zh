@@ -262,9 +262,9 @@ const SPONSORS = [
       zht: '優雲智算 by UCloud — 熱門國產模型按次調用套餐包，低至 49 元/月起',
     },
     desc: {
-      zh: 'UCloud 旗下 AI 云平台，主打包月 / 按次的高性价比国模 Agent Plan 套餐，支持 GLM-5.2，低至 49 元/月起。同时提供官转稳定海外模型，支持接入 Claude Code、Codex 及 API 调用；企业高并发、7×24 技术支持、自助开票。',
-      en: 'UCloud\u2019s AI cloud platform. Cost-effective monthly / pay-per-call Agent Plans for Chinese models (incl. GLM-5.2) from ¥49/month, plus stable access to overseas models. Works with Claude Code, Codex and direct API calls; enterprise concurrency, 24/7 support, self-service invoicing.',
-      zht: 'UCloud 旗下 AI 雲平台，主打包月 / 按次的高性價比國模 Agent Plan 套餐，支援 GLM-5.2，低至 49 元/月起。同時提供官轉穩定海外模型，支援接入 Claude Code、Codex 及 API 呼叫；企業高併發、7×24 技術支援、自助開票。',
+      zh: 'UCloud 旗下 AI 云平台，主打包月 / 按次的高性价比国模 Agent Plan 套餐，支持 GLM-5.2，低至 49 元/月起。最新上线 H3 视频生成套餐包，768P 低至 8 分/秒，支持 2K 画质，最长 30s 视频生成；企业高并发、7×24 技术支持、自助开票。',
+      en: 'UCloud\u2019s AI cloud platform. Cost-effective monthly / pay-per-call Agent Plans for Chinese models (incl. GLM-5.2) from ¥49/month. New H3 video-generation packs: 768P from ¥0.08/sec, up to 2K quality and 30-second clips. Enterprise concurrency, 24/7 support, self-service invoicing.',
+      zht: 'UCloud 旗下 AI 雲平台，主打包月 / 按次的高性價比國模 Agent Plan 套餐，支援 GLM-5.2，低至 49 元/月起。最新上線 H3 影片生成套餐包，768P 低至 8 分/秒，支援 2K 畫質，最長 30s 影片生成；企業高併發、7×24 技術支援、自助開票。',
     },
     perk: {
       zh: '🎁 通过本页链接注册，可得免费 5 元平台体验金',
