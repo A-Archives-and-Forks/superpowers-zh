@@ -345,9 +345,9 @@ const SPONSORS = [
       zht: '字節火山引擎 —— 火山方舟 Agent/Coding Plan 國模套餐首購 9.9 元起',
     },
     desc: {
-      zh: '火山方舟 Agent/Coding Plan 国模套餐首购 9.9 元起，支持 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、豆包等主流模型，统一 API，适配编码与智能体开发。',
-      en: 'Volcano Ark Agent/Coding Plans for Chinese models from ¥9.9 on first purchase, covering GLM-5.3, Kimi-K3, DeepSeek, MiniMax, Doubao and other mainstream models behind one unified API, built for coding and agent development.',
-      zht: '火山方舟 Agent/Coding Plan 國模套餐首購 9.9 元起，支援 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、豆包等主流模型，統一 API，適配編碼與智慧體開發。',
+      zh: '火山方舟 Agent/Coding Plan 国模套餐首购 9.9，支持 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、Doubao 等，注册免费领 2500w Token，统一 API，适配编码与智能体开发。',
+      en: 'Volcano Ark Agent/Coding Plans for Chinese models at ¥9.9 on first purchase, covering GLM-5.3, Kimi-K3, DeepSeek, MiniMax, Doubao and more. Get 25M free tokens on sign-up. One unified API, built for coding and agent development.',
+      zht: '火山方舟 Agent/Coding Plan 國模套餐首購 9.9，支援 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、Doubao 等，註冊免費領 2500w Token，統一 API，適配編碼與智慧體開發。',
     },
     perk: {
       zh: '🎁 注册即免费领 2500 万 Token，立即前往火山引擎活动页面',

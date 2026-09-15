@@ -94,7 +94,7 @@ Chinese community edition of [superpowers](https://github.com/obra/superpowers) 
 </td>
 <td width="75%" valign="middle">
 
-感謝 [字節火山引擎](https://www.volcengine.com/activity/ai618?utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=superpowers-zh&utm_content=hw) 贊助了本專案！火山方舟 Agent/Coding Plan 國模套餐首購 **9.9 元**起，支援 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、豆包等主流模型，統一 API，適配編碼與智慧體開發。🎁 **註冊即免費領 2500 萬 Token，立即前往[火山引擎活動頁面](https://www.volcengine.com/activity/ai618?utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=superpowers-zh&utm_content=hw)。**
+感謝 [字節火山引擎](https://www.volcengine.com/activity/ai618?utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=superpowers-zh&utm_content=hw) 贊助本專案！火山方舟 Agent/Coding Plan 國模套餐首購 **9.9**，支援 GLM-5.3、Kimi-K3、DeepSeek、MiniMax、Doubao 等，**註冊免費領 2500w Token**，統一 API，適配編碼與智慧體開發。👉 **[立即前往](https://www.volcengine.com/activity/ai618?utm_source=OWO&utm_medium=devrel-1&utm_campaign=hw&utm_term=superpowers-zh&utm_content=hw)**
 
 </td>
 </tr>
